@@ -1,23 +1,18 @@
 <!DOCTYPE html>
-<html lang="="fa">
+<html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>تبدیل مسئله به الگوریتم و کد</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>mermaid.initialize({ startOnLoad: false });</script>
   <style>
     body {
-      font-family: "Vazirmatn", sans-serif;
-      background: #f0f0f0;
+      font-family: sans-serif;
       direction: rtl;
+      background: #f9f9f9;
       padding: 20px;
-      color: #222;
     }
-    h1, h2 {
-      color: #0077cc;
-    }
-    textarea, button {
+    textarea, input, button {
       width: 100%;
       padding: 12px;
       margin-top: 10px;
@@ -34,10 +29,6 @@
       background: #0077cc;
       color: #fff;
       cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #005fa3;
     }
     .section {
       margin-top: 30px;
@@ -92,88 +83,54 @@
   </div>
 
   <script>
-    function generate() {
+    async function generate() {
       const problem = document.getElementById("problem").value.trim();
-      let flow = "";
-      let code = "";
-      let steps = [];
+      const apiKey = "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";
 
-      if (problem.includes("رمز عبور")) {
-        flow = `graph TD
-        A[شروع] --> B[دریافت رمز عبور از کاربر]
-        B --> C[بررسی طول رمز]
-        C --> D{طول >= 8؟}
-        D -- خیر --> Z[رمز ناامن است]
-        D -- بله --> E[بررسی وجود حرف بزرگ]
-        E --> F{وجود دارد؟}
-        F -- خیر --> Z
-        F -- بله --> G[بررسی وجود حرف کوچک]
-        G --> H{وجود دارد؟}
-        H -- خیر --> Z
-        H -- بله --> I[بررسی وجود عدد]
-        I --> J{وجود دارد؟}
-        J -- خیر --> Z
-        J -- بله --> K[بررسی وجود کاراکتر خاص]
-        K --> L{وجود دارد؟}
-        L -- خیر --> Z
-        L -- بله --> M[رمز امن است]
-        Z --> N[پایان]
-        M --> N`;
+      const prompt = `
+مسئله زیر را تحلیل کن و خروجی بده:
+1. مراحل الگوریتم به زبان فارسی
+2. فلوچارت Mermaid دقیق
+3. کد جاوااسکریپت قابل اجرا
 
-        code = `let password = prompt("رمز عبور را وارد کنید:");
-let isSecure = true;
+مسئله:
+${problem}
+      `;
 
-if (password.length < 8) isSecure = false;
-if (!/[A-Z]/.test(password)) isSecure = false;
-if (!/[a-z]/.test(password)) isSecure = false;
-if (!/[0-9]/.test(password)) isSecure = false;
-if (!/[!@#$%^&*()]/.test(password)) isSecure = false;
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + apiKey
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.7
+        })
+      });
 
-if (isSecure) {
-  alert("✅ رمز عبور امن است");
-} else {
-  alert("❌ رمز عبور ناامن است");
-}`;
+      const data = await res.json();
+      const result = data.choices?.[0]?.message?.content || "پاسخی دریافت نشد";
 
-        steps = [
-          "🔹 دریافت رمز عبور از کاربر",
-          "🔹 بررسی طول رمز (حداقل ۸ کاراکتر)",
-          "🔹 بررسی وجود حداقل یک حرف بزرگ",
-          "🔹 بررسی وجود حداقل یک حرف کوچک",
-          "🔹 بررسی وجود حداقل یک عدد",
-          "🔹 بررسی وجود حداقل یک کاراکتر خاص",
-          "🔹 نمایش نتیجه نهایی"
-        ];
-      } else {
-        flow = `graph TD
-        A[شروع] --> B[دریافت ورودی از کاربر]
-        B --> C[پردازش داده]
-        C --> D[نمایش خروجی]
-        D --> E[پایان]`;
+      const flowMatch = result.match(/```mermaid([\s\S]*?)```/);
+      const codeMatch = result.match(/```javascript([\s\S]*?)```/);
+      const stepsMatch = result.match(/مراحل الگوریتم([\s\S]*?)```/);
 
-        code = `let input = prompt("ورودی را وارد کنید:");
-let result = "خروجی: " + input;
-alert(result);`;
-
-        steps = [
-          "🔹 دریافت ورودی از کاربر",
-          "🔹 پردازش ساده روی ورودی",
-          "🔹 نمایش خروجی",
-          "🔹 پایان الگوریتم"
-        ];
-      }
-
-      document.getElementById("flowchart").innerHTML = `<div class="mermaid">${flow}</div>`;
+      document.getElementById("flowchart").innerHTML = flowMatch ? `<div class="mermaid">${flowMatch[1].trim()}</div>` : "فلوچارت یافت نشد";
       mermaid.init(undefined, document.querySelectorAll(".mermaid"));
-      document.getElementById("codeBlock").textContent = code;
+
+      document.getElementById("codeBlock").textContent = codeMatch ? codeMatch[1].trim() : "کد یافت نشد";
 
       const stepList = document.getElementById("steps");
       stepList.innerHTML = "";
-      steps.forEach(step => {
-        const li = document.createElement("li");
-        li.textContent = step;
-        stepList.appendChild(li);
-      });
+      if (stepsMatch) {
+        stepsMatch[1].trim().split("\n").forEach(step => {
+          const li = document.createElement("li");
+          li.textContent = step.replace(/^\d+\./, "🔹");
+          stepList.appendChild(li);
+        });
+      }
 
       document.getElementById("output").textContent = "";
     }
