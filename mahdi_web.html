@@ -1,505 +1,169 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>تولیدکننده هوشمند فلوچارت — نسخه کامل</title>
-  <style>
-    :root{
-      --bg:#041522; --card:#062032; --muted:#98a8bd;
-      --start:#16a34a; --proc:#0284c7; --dec:#f97316; --end:#7c3aed; --arrow:#9fd6f7;
-      --text:#e6eef8;
-    }
-    *{box-sizing:border-box;font-family:Vazirmatn, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif}
-    body{margin:0;background:linear-gradient(180deg,#02121a 0%, #041426 100%);color:var(--text);padding:22px}
-    .wrap{max-width:1200px;margin:0 auto}
-    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
-    h1{margin:0;font-size:20px}
-    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 22px rgba(0,0,0,0.6)}
-    textarea{width:100%;min-height:120px;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit;resize:vertical}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    button{background:linear-gradient(90deg,var(--proc),#0ea5a4);border:none;padding:10px 14px;border-radius:10px;color:white;cursor:pointer}
-    .layout{display:grid;grid-template-columns:1fr 440px;gap:16px;margin-top:18px}
-    .flowcard{min-height:640px;padding:12px;overflow:auto}
-    pre{white-space:pre-wrap;word-break:break-word;color:#cfe9ff}
-    footer{margin-top:14px;color:var(--muted);font-size:13px}
-    .badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:13px}
-    svg{width:100%;height:100%;display:block}
-    /* small legend */
-    .legend{display:flex;flex-direction:column;gap:8px;margin-top:10px;font-size:13px}
-    .legend .item{display:flex;gap:8px;align-items:center}
-    .dot{width:18px;height:18px;border-radius:4px}
-    .dot.round{border-radius:50%}
-    .muted{color:var(--muted);font-size:13px}
-    @media(max-width:1100px){.layout{grid-template-columns:1fr}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>فلوچارت هوشمند عمومی</title>
+<style>
+:root{
+  --bg:#041522; --card:#062032; --muted:#98a8bd;
+  --start:#16a34a; --proc:#0284c7; --dec:#f97316; --end:#7c3aed; --arrow:#9fd6f7;
+  --text:#e6eef8;
+}
+body{margin:0;padding:20px;font-family:Vazirmatn,sans-serif;background:var(--bg);color:var(--text);}
+.card{background:var(--card);padding:16px;border-radius:12px;margin-bottom:16px;box-shadow:0 6px 20px rgba(0,0,0,0.5);}
+textarea{width:100%;min-height:100px;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.1);color:inherit;border-radius:8px;}
+button{padding:10px 14px;border:none;border-radius:10px;background:var(--proc);color:white;cursor:pointer;margin-top:6px;margin-right:4px;}
+.layout{display:grid;grid-template-columns:1fr 440px;gap:16px;}
+.flowcard{height:640px;overflow:auto;padding:12px;}
+pre{white-space:pre-wrap;word-break:break-word;color:#cfe9ff;}
+.legend{display:flex;flex-direction:column;gap:6px;font-size:13px;margin-top:10px;}
+.item{display:flex;gap:8px;align-items:center;}
+.dot{width:18px;height:18px;border-radius:4px;}
+.dot.round{border-radius:50%;}
+.muted{color:var(--muted);font-size:13px;}
+svg{width:100%;height:100%;display:block;}
+@media(max-width:1100px){.layout{grid-template-columns:1fr;}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="card" style="padding:12px 16px;display:flex;align-items:center;gap:12px">
-        <div style="width:46px;height:46px;border-radius:10px;background:linear-gradient(180deg,#06b6d4,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:700">FC</div>
-        <div>
-          <h1>تولیدکننده هوشمند فلوچارت — SVG، بدون وابستگی</h1>
-          <div style="color:var(--muted);font-size:13px">مسئله را به زبان طبیعی بنویس. ابزار سعی می‌کند الگوریتم را تشخیص داده و فلوچارت و توضیحات مخصوص هر گره تولید کند.</div>
-        </div>
-      </div>
-    </header>
 
-    <div class="card">
-      <label for="problem">صورت مسئله (فارسی یا انگلیسی):</label>
-      <textarea id="problem" placeholder="مثال: بزرگ‌ترین عدد بین سه عدد را پیدا کن"></textarea>
-      <div class="controls">
-        <input type="text" id="title" placeholder="عنوان الگوریتم (اختیاری)" />
-        <button id="generate">تولید فلوچارت دقیق</button>
-        <button id="exportSvg">دانلود SVG</button>
-        <button id="exportPng">دانلود PNG</button>
-        <div style="margin-left:auto" class="muted">عمودی • رنگی • بدون اینترنت</div>
-      </div>
-    </div>
+<div class="card">
+<h2>فلوچارت هوشمند عمومی</h2>
+<p>هر مسئله‌ای که می‌خواهید را وارد کنید، فلوچارت اختصاصی تولید می‌شود.</p>
+<textarea id="problem" placeholder="مثال: اعداد بین 10 تا 30 را تولید کن"></textarea>
+<br>
+<button id="generate">تولید فلوچارت</button>
+<button id="exportSvg">دانلود SVG</button>
+<button id="exportPng">دانلود PNG</button>
+</div>
 
-    <div class="layout">
-      <div class="card flowcard">
-        <div class="badge">فلوچارت (SVG)</div>
-        <div id="svgWrap" style="margin-top:12px;height:640px;">
-          <svg id="flowSvg" viewBox="0 0 900 1200" preserveAspectRatio="xMidYMin meet"></svg>
-        </div>
-        <div class="legend" id="legend" style="margin-top:12px;">
-          <div style="font-weight:600">راهنما شکل‌ها</div>
-          <div class="item"><div class="dot round" style="background:var(--start)"></div> دایره/مستطیل گرد: شروع / پایان</div>
-          <div class="item"><div class="dot" style="background:var(--proc)"></div> مستطیل: عملیات / محاسبات مخصوصِ مسئله</div>
-          <div class="item"><div class="dot" style="background:var(--dec);width:22px;height:22px;transform:rotate(45deg)"></div> لوزی: شرط (تصمیم)</div>
-          <div class="item"><div class="dot" style="background:var(--end)"></div> خروجی / نتیجه</div>
-          <div class="item muted">فلش‌ها مسیر اجرا را نشان می‌دهند و برچسب‌ها (بله/خیر) روی شاخه‌ها قرار می‌گیرند.</div>
-        </div>
-      </div>
+<div class="layout">
+<div class="card flowcard">
+<div class="badge">فلوچارت (SVG)</div>
+<div id="svgWrap" style="margin-top:12px;height:640px;">
+<svg id="flowSvg" viewBox="0 0 900 1200" preserveAspectRatio="xMidYMin meet"></svg>
+</div>
+<div class="legend">
+<div style="font-weight:600">راهنما شکل‌ها</div>
+<div class="item"><div class="dot round" style="background:var(--start)"></div> دایره: شروع / پایان</div>
+<div class="item"><div class="dot" style="background:var(--proc)"></div> مستطیل: عملیات / محاسبات</div>
+<div class="item"><div class="dot" style="background:var(--dec);width:22px;height:22px;transform:rotate(45deg)"></div> لوزی: شرط / تصمیم</div>
+<div class="item"><div class="dot" style="background:var(--end)"></div> خروجی / نمایش نتیجه</div>
+<div class="item muted">فلش‌ها مسیر اجرا را نشان می‌دهند.</div>
+</div>
+</div>
 
-      <div class="card flowcard">
-        <div class="badge">اطلاعات کد (ورودی‌ها، متغیرها، پیچیدگی تقریبی)</div>
-        <div id="info" style="margin-top:12px;color:#cfe9ff"></div>
-        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)" />
-        <div class="badge">شرح هر گره (متنی و اختصاصی مسئله)</div>
-        <pre id="explain" style="margin-top:12px;"></pre>
-      </div>
-    </div>
-
-    <footer>نسخهٔ آفلاین و مستقل — برای مسائل خیلی پیچیده ممکن است نیاز به ورودی مرحله‌ای داشته باشیم؛ اما این نسخه برای اکثریت مسائل رایج (مرتب‌سازی، جمع، جستجو، عدد اول، فاکتوریل، ب.م.م، معکوس و یافتن اکستریم‌ها) توضیح و فلوچارت تولید می‌کند.</footer>
-  </div>
+<div class="card flowcard">
+<div class="badge">اطلاعات کد</div>
+<div id="info" style="margin-top:12px;color:#cfe9ff"></div>
+<hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)">
+<div class="badge">شرح هر گره</div>
+<pre id="explain"></pre>
+</div>
+</div>
 
 <script>
-/* ====== تحلیل زبان طبیعی (قاعده‌ای و قابل گسترش) ====== */
-function analyze(text){
-  const t=text.toLowerCase();
-  const out = {type:'generic', features:[]};
-  if(/sort|مرتب|مرتب\s*کن|مرتب‌سازی/.test(t)) out.type='sort';
-  if(/max|min|بزرگترین|کوچکترین|حداکثر|حداقل/.test(t)) out.type='extreme';
-  if(/sum|جمع|مجموع|average|میانگین/.test(t)){
-    out.type = /average|میانگین/.test(t) ? 'average' : 'sum';
-  }
-  if(/prime|عدد\s*اول|اول/.test(t)) out.type='prime';
-  if(/search|جستجو|پیدا کن|find/.test(t)) out.type='search';
-  if(/factorial|فاکتوریل|فکتوریل/.test(t)) out.type='factorial';
-  if(/reverse|معکوس|برگردان/.test(t)) out.type='reverse';
-  if(/gcd|ب\.?م\.?م|م\.?م\.?م|gcd/.test(t)) out.type='gcd';
-  if(/palindrom|پالین|قرینه|palindrome/.test(t)) out.type='palindrome';
-  if(/largest|smallest|biggest/.test(t)) out.type='extreme';
-  if(/three|سه|three numbers|سه عدد/.test(t)) out.features.push('three-numbers');
-  // detect list or array
-  if(/list|آرایه|لیست/.test(t)) out.features.push('list');
-  // detect words like "between" "between x and y" -> extreme candidate
-  return out;
+/* ====== تحلیل generic ====== */
+function analyzeGeneric(text){
+  return {type:'generic', features:[]};
 }
 
-/* ====== ساخت گراف (لیست گره‌ها و اتصال‌ها) ====== */
-function buildGraph(type, userText, title){
-  const nodes = []; const edges = [];
-  let idCounter=1; const nid = ()=> 'n'+(idCounter++);
-  function add(text, ntype='proc'){ const id=nid(); nodes.push({id, text, type:ntype}); return id; }
-  function link(a,b, label=''){ edges.push({from:a,to:b,label}); }
-
-  const start = add('شروع','start');
-  // branch by type
-  if(type==='sort'){
-    const inN = add('دریافت لیست اعداد (A)','proc');
-    const i = add('i = 0','proc');
-    const cond = add('i < n-1 ؟','decision');
-    const findMin = add('پیدا کردن کوچک‌ترین عنصر از i تا n-1','proc');
-    const swap = add('جابجایی: A[i] <-> A[min]','proc');
-    const inc = add('i = i + 1','proc');
-    const end = add('نتیجه: لیست مرتب‌شده','end');
-    link(start,inN); link(inN,i); link(i,cond);
-    link(cond, findMin, 'بله'); link(findMin, swap); link(swap, inc); link(inc, cond);
-    link(cond, end, 'خیر');
-    return {nodes, edges, start, end};
-  }
-
-  if(type==='extreme'){
-    const inN = add('دریافت تعداد و عناصر (A)','proc');
-    const init = add('max = A[0]','proc');
-    const i = add('i = 1','proc');
-    const cond = add('i < n ؟','decision');
-    const cmp = add('A[i] > max ؟','decision');
-    const set = add('max = A[i]','proc');
-    const inc = add('i = i + 1','proc');
-    const end = add('نمایش max','end');
-    link(start,inN); link(inN,init); link(init,i); link(i,cond);
-    link(cond, cmp, 'بله'); link(cmp, set, 'بله'); link(cmp, inc, 'خیر');
-    link(set, inc); link(inc, cond); link(cond, end, 'خیر');
-    return {nodes, edges, start, end};
-  }
-
-  if(type==='sum' || type==='average'){
-    const inN = add('دریافت n (یا دریافت لیست) و عناصر','proc');
-    const sum = add('sum = 0','proc');
-    const i = add('i = 1','proc');
-    const cond = add('i <= n ؟','decision');
-    const body = add('sum += A[i]; i += 1','proc');
-    const end = add(type==='average' ? 'نمایش sum / n (میانگین)' : 'نمایش sum','end');
-    link(start,inN); link(inN,sum); link(sum,i); link(i,cond);
-    link(cond, body, 'بله'); link(body, cond); link(cond, end, 'خیر');
-    return {nodes, edges, start, end};
-  }
-
-  if(type==='prime'){
-    const inN = add('دریافت n','proc');
-    const check = add('اگر n < 2 -> غیراول','decision');
-    const i = add('i = 2','proc');
-    const cond = add('i * i <= n ؟','decision');
-    const div = add('n % i == 0 ؟','decision');
-    const notp = add('نتیجه: غیر اول','end');
-    const inc = add('i = i + 1','proc');
-    const prime = add('نتیجه: اول','end');
-    link(start,inN); link(inN,check);
-    link(check, notp, 'بله'); link(check, i, 'خیر');
-    link(i, cond); link(cond, div, 'بله'); link(div, notp, 'بله'); link(div, inc, 'خیر');
-    link(inc, cond); link(cond, prime, 'خیر');
-    return {nodes, edges, start, end: prime};
-  }
-
-  if(type==='search'){
-    const inN = add('دریافت لیست A و کلید key','proc');
-    const i = add('i = 0','proc');
-    const cond = add('i < n ؟','decision');
-    const eq = add('A[i] == key ؟','decision');
-    const found = add('پیدا شد -> index = i','end');
-    const inc = add('i = i + 1','proc');
-    const notfound = add('پیدا نشد','end');
-    link(start,inN); link(inN,i); link(i,cond);
-    link(cond, eq, 'بله'); link(eq, found, 'بله'); link(eq, inc, 'خیر');
-    link(inc, cond); link(cond, notfound, 'خیر');
-    return {nodes, edges, start, end: found};
-  }
-
-  if(type==='factorial'){
-    const inN = add('دریافت n','proc');
-    const res = add('res = 1','proc');
-    const i = add('i = 2','proc');
-    const cond = add('i <= n ؟','decision');
-    const body = add('res *= i; i += 1','proc');
-    const end = add('نمایش res (n!)','end');
-    link(start,inN); link(inN,res); link(res,i); link(i,cond);
-    link(cond, body, 'بله'); link(body, cond); link(cond, end, 'خیر');
-    return {nodes, edges, start, end};
-  }
-
-  if(type==='reverse'){
-    const inN = add('دریافت آرایه A','proc');
-    const init = add('i = 0; j = n-1','proc');
-    const cond = add('i < j ؟','decision');
-    const swap = add('swap A[i] , A[j]; i++; j--','proc');
-    const end = add('آرایه معکوس شده','end');
-    link(start,inN); link(inN,init); link(init,cond);
-    link(cond, swap, 'بله'); link(swap, cond); link(cond, end, 'خیر');
-    return {nodes, edges, start, end};
-  }
-
-  if(type==='gcd'){
-    const inN = add('دریافت a, b','proc');
-    const cond = add('b == 0 ؟','decision');
-    const end = add('print(a) — ب.م.م','end');
-    const step = add('a, b = b, a % b','proc');
-    link(start,inN); link(inN, cond);
-    link(cond, end, 'بله'); link(cond, step, 'خیر'); link(step, cond);
-    return {nodes, edges, start, end};
-  }
-
-  if(type==='palindrome'){
-    const inN = add('دریافت رشته یا آرایه A','proc');
-    const i = add('i=0; j=n-1','proc');
-    const cond = add('i < j ؟','decision');
-    const cmp = add('A[i] == A[j] ؟','decision');
-    const notpal = add('غیر قرینه','end');
-    const inc = add('i++; j--','proc');
-    const pal = add('قرینه (palindrome)','end');
-    link(start,inN); link(inN,i); link(i,cond);
-    link(cond, cmp, 'بله'); link(cmp, inc, 'بله'); link(cmp, notpal, 'خیر');
-    link(inc, cond); link(cond, pal, 'خیر');
-    return {nodes, edges, start, end: pal};
-  }
-
-  // generic fallback: try to extract steps: input -> process -> condition? -> output
-  const inN = add('دریافت ورودی‌ها','proc');
-  const proc = add('پردازش مسئله (محاسبهٔ اصلی)','proc');
-  const decision = add('شرط/حلقه؟','decision');
-  const loopAct = add('عملیات تکراری','proc');
-  const out = add('نمایش خروجی','end');
-  link(start,inN); link(inN,proc); link(proc,decision);
-  link(decision, loopAct, 'بله'); link(loopAct, decision); link(decision, out, 'خیر');
-  return {nodes, edges, start, end: out};
+/* ====== ساخت گراف عمومی ====== */
+function buildGenericGraph(text){
+  const nodes=[], edges=[], nid = (i=>()=> 'n'+(i+=1))(0);
+  const start = nid(); nodes.push({id:start,text:'شروع',type:'start'});
+  const input = nid(); nodes.push({id:input,text:'دریافت ورودی‌ها (براساس مسئله)','type':'proc'});
+  const process = nid(); nodes.push({id:process,text:'پردازش اصلی مسئله','type':'proc'});
+  const decision = nid(); nodes.push({id:decision,text:'شرط / تکرار؟','type':'decision'});
+  const loop = nid(); nodes.push({id:loop,text:'عملیات تکراری / مرحله‌ای','type':'proc'});
+  const output = nid(); nodes.push({id:output,text:'نمایش نتیجه / خروجی','type':'end'});
+  edges.push({from:start,to:input,label:''});
+  edges.push({from:input,to:process,label:''});
+  edges.push({from:process,to:decision,label:''});
+  edges.push({from:decision,to:loop,label:'بله'});
+  edges.push({from:loop,to:decision,label:''});
+  edges.push({from:decision,to:output,label:'خیر'});
+  return {nodes,edges,start,output};
 }
 
-/* ====== قراردهی (layout) گره‌ها: عمودی، فاصله ثابت، لوزی‌ها کمی افقی شیفت می‌خورند ====== */
+/* ====== layout عمودی ====== */
 function layoutGraph(graph){
-  const positions = {};
-  // ساده: از بالا به پایین با فاصلۀ یکنواخت؛ اما لوزی‌ها را کمی به چپ یا راست منتقل می‌کنیم
-  const yStep = 110;
-  let y = 60;
-  graph.nodes.forEach((n, idx)=>{
-    const baseX = 450; // مرکز
-    let x = baseX;
-    if(n.type === 'decision'){
-      // alternate left/right based on index to visually باز کردن شاخه‌ها
-      x = (idx % 2 === 0) ? baseX - 140 : baseX + 140;
-    }
-    positions[n.id] = {x, y};
-    y += yStep;
+  const positions={}; let y=60;
+  graph.nodes.forEach((n,idx)=>{
+    let x=450;
+    if(n.type==='decision') x = idx%2===0? 310 : 590;
+    positions[n.id]={x,y}; y+=110;
   });
   return positions;
 }
 
-/* ====== رسم SVG به‌صورت آفلاین: شکل‌ها، متن، فلش و برچسب شاخه‌ها ====== */
+/* ====== render SVG ====== */
 function render(graph, positions, svgEl){
   while(svgEl.firstChild) svgEl.removeChild(svgEl);
-  const ns = 'http://www.w3.org/2000/svg';
-  function el(tag, attrs = {}){ const e = document.createElementNS(ns, tag); for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
-
-  // markers for arrowheads
-  const defs = el('defs');
-  const marker = el('marker',{id:'arrow', markerWidth:10, markerHeight:10, refX:8, refY:5, orient:'auto', markerUnits:'strokeWidth'});
-  const pathM = el('path',{d:'M0 0 L10 5 L0 10 z', fill: 'var(--arrow)'});
-  marker.appendChild(pathM); defs.appendChild(marker);
-  // embed simple CSS for node text color (as SVG style)
-  const style = document.createElementNS(ns,'style');
-  style.textContent = `
-    .node-text{fill: ${getComputedStyle(document.documentElement).getPropertyValue('--text') || '#e6eef8'}; font-size:13px; font-family: Vazirmatn, sans-serif;}
-    .label-text{fill: ${getComputedStyle(document.documentElement).getPropertyValue('--text') || '#e6eef8'}; font-size:12px;}
-  `;
-  defs.appendChild(style);
-  svgEl.appendChild(defs);
-
-  // draw edges as curved paths and add labels
+  const ns='http://www.w3.org/2000/svg';
+  const el=(t,a={})=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+  const defs=el('defs'); svgEl.appendChild(defs);
+  const marker=el('marker',{id:'arrow', markerWidth:10, markerHeight:10, refX:8, refY:5, orient:'auto', markerUnits:'strokeWidth'});
+  marker.appendChild(el('path',{d:'M0 0 L10 5 L0 10 z',fill:'var(--arrow)'})); defs.appendChild(marker);
   graph.edges.forEach(e=>{
-    const p1 = positions[e.from]; const p2 = positions[e.to];
-    const startX = p1.x; const startY = p1.y + 30;
-    const endX = p2.x; const endY = p2.y - 30;
-    const midY = (startY + endY) / 2;
-    // if far horizontally, use an S-curve
-    const ctrl1x = startX; const ctrl1y = midY;
-    const ctrl2x = endX; const ctrl2y = midY;
-    const pathD = `M ${startX} ${startY} C ${ctrl1x} ${ctrl1y} ${ctrl2x} ${ctrl2y} ${endX} ${endY}`;
-    const pathEl = el('path', {d: pathD, stroke: getComputedStyle(document.documentElement).getPropertyValue('--arrow') || '#9fd6f7', 'stroke-width':1.6, fill:'none', 'marker-end':'url(#arrow)'});
-    svgEl.appendChild(pathEl);
-    if(e.label){
-      const tx = el('text', {x: (startX+endX)/2, y: midY - 8, 'text-anchor':'middle', 'class':'label-text'});
-      tx.textContent = e.label;
-      svgEl.appendChild(tx);
-    }
+    const p1=positions[e.from], p2=positions[e.to];
+    const startX=p1.x,startY=p1.y+30,endX=p2.x,endY=p2.y-30,midY=(startY+endY)/2;
+    const pathD=`M ${startX} ${startY} C ${startX} ${midY} ${endX} ${midY} ${endX} ${endY}`;
+    const pathEl=el('path',{d:pathD,stroke:'var(--arrow)','stroke-width':1.6,fill:'none','marker-end':'url(#arrow)'}); svgEl.appendChild(pathEl);
+    if(e.label){const tEl=el('text',{x:(startX+endX)/2,y:midY-8,'text-anchor':'middle',class:'label-text'}); tEl.textContent=e.label; svgEl.appendChild(tEl);}
   });
-
-  // draw nodes shapes and texts
   graph.nodes.forEach(n=>{
-    const p = positions[n.id];
-    const g = el('g', {'data-id':n.id});
-    // choose style by type
-    if(n.type === 'start'){
-      const rect = el('rect',{x:p.x-110, y:p.y-22, width:220, height:44, rx:22, fill:getVar('--start'), stroke:shade(getVar('--start'), -30)});
-      g.appendChild(rect);
-    } else if(n.type === 'end'){
-      const rect = el('rect',{x:p.x-110, y:p.y-22, width:220, height:44, rx:22, fill:getVar('--end'), stroke:shade(getVar('--end'), -30)});
-      g.appendChild(rect);
-    } else if(n.type === 'decision'){
-      // diamond (rotate square)
-      const sizeX = 110, sizeY = 34;
-      const points = `${p.x},${p.y-sizeY} ${p.x+sizeX},${p.y} ${p.x},${p.y+sizeY} ${p.x-sizeX},${p.y}`;
-      const poly = el('polygon',{points, fill:getVar('--dec'), stroke:shade(getVar('--dec'), -30)});
-      g.appendChild(poly);
-    } else { // proc
-      const rect = el('rect',{x:p.x-140, y:p.y-24, width:280, height:48, rx:8, fill:getVar('--proc'), stroke:shade(getVar('--proc'), -30)});
-      g.appendChild(rect);
-    }
-
-    // text: try wrapping into lines
-    const lines = wrapText(n.text, 28);
-    lines.forEach((ln,i)=>{
-      const yOffset = p.y - (lines.length-1)*8 + i*16;
-      const tx = el('text',{x:p.x, y:yOffset, 'text-anchor':'middle', 'class':'node-text'});
-      tx.textContent = ln;
-      g.appendChild(tx);
-    });
-
+    const p=positions[n.id]; const g=el('g',{'data-id':n.id});
+    if(n.type==='start'){g.appendChild(el('rect',{x:p.x-110,y:p.y-22,width:220,height:44,rx:22,fill:'var(--start)'}));}
+    else if(n.type==='end'){g.appendChild(el('rect',{x:p.x-110,y:p.y-22,width:220,height:44,rx:22,fill:'var(--end)'}));}
+    else if(n.type==='decision'){const sX=110,sY=34;const pts=`${p.x},${p.y-sY} ${p.x+sX},${p.y} ${p.x},${p.y+sY} ${p.x-sX},${p.y}`;g.appendChild(el('polygon',{points:pts,fill:'var(--dec)'}));}
+    else{g.appendChild(el('rect',{x:p.x-140,y:p.y-24,width:280,height:48,rx:8,fill:'var(--proc)'}));}
+    const lines=n.text.match(/.{1,28}/g)||[n.text]; lines.forEach((ln,i)=>{const tx=el('text',{x:p.x,y:p.y-((lines.length-1)*8)+i*16,'text-anchor':'middle','class':'node-text'});tx.textContent=ln; g.appendChild(tx);});
     svgEl.appendChild(g);
   });
-
-  // adjust viewBox to fit content
-  const ys = Object.values(positions).map(p=>p.y);
-  const maxY = Math.max(...ys) + 140;
-  svgEl.setAttribute('viewBox', `0 0 900 ${Math.max(640, maxY)}`);
 }
 
-/* ====== کمک‌افزارها ====== */
-function getVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#cccccc';
-}
-function shade(hex, percent){
-  // hex color like #rrggbb, darken/lighten by percent (-100..100)
-  try{
-    let c = hex.replace('#','');
-    if(c.length===3) c = c.split('').map(ch=>ch+ch).join('');
-    const num = parseInt(c,16);
-    let r = (num >> 16) + percent; let g = ((num >> 8) & 0x00FF) + percent; let b = (num & 0x0000FF) + percent;
-    r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255,g)); b = Math.max(0, Math.min(255,b));
-    return `rgb(${r},${g},${b})`;
-  }catch(e){ return hex; }
-}
-function wrapText(text, maxChars){
-  const words = text.split(' ');
-  const lines = []; let cur='';
-  words.forEach(w=>{
-    if((cur + ' ' + w).trim().length <= maxChars) cur = (cur + ' ' + w).trim();
-    else { lines.push(cur); cur = w; }
-  });
-  if(cur) lines.push(cur);
-  return lines;
-}
-
-/* ====== تولید توضیحات اختصاصی هر گره بر اساس متن گره ====== */
+/* ====== توضیح گره ====== */
 function explainNodeText(nodeText){
-  const t = nodeText.toLowerCase();
-  if(/دریافت|دریافت n|دریافت لیست|دریافت رشته|دریافت a|دریافت لیست و کلید|دریافت آرایه/.test(t))
-    return 'این گره ورودی‌های مسئله را دریافت و آماده‌سازی می‌کند.';
-  if(/i = 0|i=0|i = 1|i=1|j = n-1|j=n-1/.test(t))
-    return 'تنظیم اندیس/شاخص‌ها برای پیمایش روی عناصر (آرایه یا لیست).';
-  if(/sum = 0|res = 1|min =|max =|sum=0|res=1/.test(t))
-    return 'مقداردهی اولیهٔ متغیرهای کمکی (مثلاً مجموع، حاصل‌ضرب، حداقل/حداکثر).';
-  if(/جستجوی کوچک/).test ? false : false; // safe no-op
-  if(/جست|پیدا کردن کوچک|پیدا کردن بزرگ|پیدا کردن کوچک‌ترین|پیدا کردن بزرگ‌ترین/.test(t))
-    return 'اینجا عملیاتی برای یافتن یک مقدار خاص (مثلاً کوچک‌ترین یا بزرگ‌ترین) انجام می‌شود؛ معمولاً شامل پیمایش و مقایسه است.';
-  if(/جابجایی|swap/.test(t))
-    return 'جابجایی دو عنصر در آرایه/لیست (معمول در مرتب‌سازی).';
-  if(/i < n|i <= n|i \\\\< n/.test(t))
-    return 'شرط کنترل حلقه: تا زمان برقرار بودن، حلقه ادامه پیدا می‌کند.';
-  if(/n % i/.test(t))
-    return 'بررسی تقسیم‌پذیری: اگر بدون باقی‌مانده تقسیم شود، یک تقسیم‌کننده پیدا شده است.';
-  if(/نمایش|نتیجه|print|display/.test(t))
-    return 'نمایش یا خروجی نهایی مسئله به کاربر (نتیجه).';
-  if(/swap a\[i\]|swap a|\bswap\b/.test(t))
-    return 'تعویض مقادیر برای تغییر ترتیب عناصر.';
-  if(/i = i \+ 1|i\+\+|i = i\+1|i \+\= 1|i += 1/.test(t))
-    return 'افزایش اندیس برای حرکت به عنصر بعدی.';
-  if(/شرط|حلقه|شرط\/حلقه/.test(t))
-    return 'این گره یک تصمیم یا شرط است؛ بر اساس بله/خیر مسیر اجرای برنامه انتخاب می‌شود.';
-  // fallback
-  return 'این مرحله یک عملیات محاسباتی یا تصمیم‌گیری مربوط به مسئله است؛ توضیح دقیق‌تر در متن گره آمده است.';
+  return 'این مرحله مربوط به: '+nodeText;
 }
 
-/* ====== تولید اطلاعات کلی (ورودی‌ها، متغیرها، پیچیدگی تقریبی) ====== */
-function genInfo(graph, type){
-  const info = {inputs:[], variables:[], complexity:'به صورت تقریبی', notes:[]};
-  const texts = graph.nodes.map(n=>n.text).join(' ');
-  // inputs guess
-  if(/دریافت لیست|آرایه|لیست/.test(texts)) info.inputs.push('آرایه / لیست (A)');
-  if(/دریافت n|دریافت a, b|دریافت a, b/.test(texts)) info.inputs.push('اعداد یا پارامترهای عددی (n, a, b)');
-  if(/کلید|key/.test(texts)) info.inputs.push('کلید جستجو (key)');
-  if(info.inputs.length===0) info.inputs.push('مشخص نیست — براساس متن باید دریافت شود');
-
-  // variables guess by keywords
-  const vars = [];
-  if(/sum|مجموع/.test(texts)) vars.push('sum');
-  if(/res|حاصل/.test(texts)) vars.push('res');
-  if(/\bi\b/.test(texts)) vars.push('i (اندیس)');
-  if(/\bj\b/.test(texts)) vars.push('j (اندیس/اشاره‌گر)');
-  if(/min|max|min =|max =/.test(texts)) vars.push('min / max');
-  info.variables = vars.length? vars : ['متغیرهای کمکی (i, j, ... )'];
-
-  // complexity guess
-  if(/مرتب|sort|جستجوی کوچک|پیدا کردن|find|min|max/.test(texts)) info.complexity = 'اغلب O(n^2) برای نسخهٔ ساده (مثال: selection sort)، اما می‌تواند بهتر شود با الگوریتم‌های پیشرفته‌تر.';
-  else if(/جمع|sum|میانگین|average/.test(texts)) info.complexity = 'O(n)';
-  else if(/فاکتوریل|factorial/.test(texts)) info.complexity = 'O(n)';
-  else if(/gcd|ب\.?م\.?م/.test(texts)) info.complexity = 'O(log(min(a,b)))';
-  else info.complexity = 'وابسته به پیاده‌سازی؛ حدس اولیه خطی یا الگوریتم ساده ذکرشده.';
-
-  info.notes.push('توضیحات هر گره در بخش شرح ارائه شده‌اند.');
-  return info;
+/* ====== تولید info ====== */
+function genInfo(graph){
+  return {inputs:['ورودی‌ها براساس متن'], variables:['متغیرهای کمکی (i,j,...)'], complexity:'پیچیدگی تقریبی خطی یا حلقه‌ای'};
 }
 
-/* ====== UI bindings ====== */
-const genBtn = document.getElementById('generate');
-const problemEl = document.getElementById('problem');
-const svgEl = document.getElementById('flowSvg');
-const infoEl = document.getElementById('info');
-const explainEl = document.getElementById('explain');
-const exportSvgBtn = document.getElementById('exportSvg');
-const exportPngBtn = document.getElementById('exportPng');
+/* ====== UI ====== */
+const genBtn=document.getElementById('generate'), problemEl=document.getElementById('problem'),
+svgEl=document.getElementById('flowSvg'), infoEl=document.getElementById('info'), explainEl=document.getElementById('explain');
 
-genBtn.addEventListener('click', ()=>{
-  const text = problemEl.value.trim();
-  if(!text){ alert('لطفاً مسئله را وارد کنید.'); return; }
-  const type = analyze(text).type;
-  const title = document.getElementById('title').value.trim();
-  const graph = buildGraph(type, text, title);
-  const positions = layoutGraph(graph);
-  render(graph, positions, svgEl);
-  const info = genInfo(graph, type);
-  infoEl.innerHTML = `<div><strong>عنوان:</strong> ${title || '(بدون عنوان)'}<br><strong>نوع تشخیص:</strong> ${type}<br><strong>ورودی‌ها:</strong> ${info.inputs.join(', ')}<br><strong>متغیرهای مهم:</strong> ${info.variables.join(', ')}<br><strong>پیچیدگی (حدس):</strong> ${info.complexity}</div>`;
-  // explanations per node
-  const expl = graph.nodes.map(n => {
-    return `- [${n.id}] "${n.text}"\n  توضیح: ${explainNodeText(n.text)}`;
-  }).join('\n\n');
-  explainEl.textContent = expl;
+genBtn.addEventListener('click',()=>{
+  const text=problemEl.value.trim(); if(!text){alert('لطفاً مسئله را وارد کنید'); return;}
+  const graph=buildGenericGraph(text); const pos=layoutGraph(graph); render(graph,pos,svgEl);
+  const info=genInfo(graph);
+  infoEl.innerHTML=`<strong>ورودی‌ها:</strong> ${info.inputs.join(', ')}<br>
+  <strong>متغیرها:</strong> ${info.variables.join(', ')}<br>
+  <strong>پیچیدگی:</strong> ${info.complexity}`;
+  const expl=graph.nodes.map(n=>`- [${n.id}] "${n.text}"\n  توضیح: ${explainNodeText(n.text)}`).join('\n\n');
+  explainEl.textContent=expl;
 });
 
-// export SVG
-exportSvgBtn.addEventListener('click', ()=>{
-  const clone = svgEl.cloneNode(true);
-  // inline styles already SVG-based; serialize
-  const serializer = new XMLSerializer();
-  const str = serializer.serializeToString(clone);
-  const blob = new Blob([str], {type:'image/svg+xml;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'flowchart.svg';
-  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+/* ====== Export SVG/PNG ====== */
+document.getElementById('exportSvg').addEventListener('click',()=>{
+  const serializer=new XMLSerializer(); const str=serializer.serializeToString(svgEl);
+  const blob=new Blob([str],{type:'image/svg+xml'}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='flowchart.svg'; document.body.appendChild(a);a.click();a.remove();
 });
-
-// export PNG
-exportPngBtn.addEventListener('click', ()=>{
-  const serializer = new XMLSerializer();
-  const str = serializer.serializeToString(svgEl);
-  const img = new Image();
-  const svgBlob = new Blob([str], {type:'image/svg+xml;charset=utf-8'});
-  const url = URL.createObjectURL(svgBlob);
-  img.onload = function(){
-    const canvas = document.createElement('canvas');
-    // scale for better resolution
-    const scale = 1.5;
-    const w = svgEl.viewBox.baseVal.width || svgEl.clientWidth || 900;
-    const h = svgEl.viewBox.baseVal.height || svgEl.clientHeight || 800;
-    canvas.width = w * scale; canvas.height = h * scale;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#02121a'; ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.drawImage(img,0,0, canvas.width, canvas.height);
-    canvas.toBlob(function(blob){
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'flowchart.png';
-      document.body.appendChild(a); a.click(); a.remove();
-    }, 'image/png');
-    URL.revokeObjectURL(url);
-  };
-  img.src = url;
-});
-
-// initial sample
-document.addEventListener('DOMContentLoaded', ()=> {
-  problemEl.value = 'بزرگ‌ترین عدد بین سه عدد را پیدا کن';
+document.getElementById('exportPng').addEventListener('click',()=>{
+  const serializer=new XMLSerializer(); const str=serializer.serializeToString(svgEl); const img=new Image();
+  const svgBlob=new Blob([str],{type:'image/svg+xml'}); const url=URL.createObjectURL(svgBlob);
+  img.onload=function(){const canvas=document.createElement('canvas');canvas.width=900;canvas.height=1200;
+  const ctx=canvas.getContext('2d'); ctx.fillStyle='#02121a'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  canvas.toBlob(function(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='flowchart.png';document.body.appendChild(a);a.click();a.remove();},'image/png'); URL.revokeObjectURL(url);};
+  img.src=url;
 });
 </script>
+
 </body>
 </html>
