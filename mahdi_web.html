@@ -2,61 +2,80 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <title>سایت هوشمند تولید الگوریتم و کد</title>
+  <title>فلوچارت الگوریتم هوشمند</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>mermaid.initialize({ startOnLoad: false });</script>
   <style>
-    body { font-family: sans-serif; direction: rtl; background: #f0f4f8; padding: 20px; }
+    body {
+      font-family: sans-serif;
+      direction: rtl;
+      background: #f0f4f8;
+      padding: 20px;
+    }
     textarea, button {
-      width: 100%; padding: 12px; margin-top: 10px; font-size: 16px;
-      border-radius: 8px; border: none;
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
     }
-    textarea { background: #fff; color: #000; resize: vertical; }
-    button { background: #0077cc; color: #fff; cursor: pointer; transition: 0.3s; }
-    button:hover { background: #005fa3; }
+    textarea {
+      background: #fff;
+      color: #000;
+      resize: vertical;
+    }
+    button {
+      background: #0077cc;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #005fa3;
+    }
     .section {
-      margin-top: 30px; background: #fff; padding: 20px;
-      border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    pre {
-      background: #222; color: #0f0; padding: 15px;
-      border-radius: 8px; overflow-x: auto;
+    .mermaid {
+      direction: ltr;
     }
-    #output {
-      background: #ffe082; padding: 10px;
-      margin-top: 10px; border-radius: 8px;
+    #flowchart {
+      margin-top: 20px;
     }
-    .mermaid { direction: ltr; }
-    ul { line-height: 1.8; }
+    #fullResponse {
+      white-space: pre-wrap;
+      background: #eee;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #333;
+    }
   </style>
 </head>
 <body>
 
-  <h1>🚀 سایت هوشمند تبدیل مسئله به الگوریتم و کد</h1>
+  <h1>📊 تولید فلوچارت الگوریتم از مسئله</h1>
 
   <div class="section">
     <label>🧠 مسئله برنامه‌نویسی را وارد کنید:</label>
     <textarea id="problem" rows="4" placeholder="مثلاً: بررسی رمز عبور امن"></textarea>
-    <button onclick="generate()">تولید الگوریتم</button>
+    <button onclick="generate()">تولید فلوچارت</button>
   </div>
 
   <div class="section">
-    <h2>📊 فلوچارت الگوریتم</h2>
+    <h2>📈 فلوچارت الگوریتم</h2>
     <div id="flowchart"></div>
-    <h3>📝 مراحل الگوریتم:</h3>
-    <ul id="steps"></ul>
-  </div>
-
-  <div class="section">
-    <h2>💻 کد جاوااسکریپت</h2>
-    <pre id="codeBlock"></pre>
-    <button onclick="runCode()">▶️ اجرای کد</button>
-    <div id="output"></div>
   </div>
 
   <div class="section">
     <h2>🧾 پاسخ کامل مدل (برای بررسی)</h2>
-    <pre id="fullResponse"></pre>
+    <div id="fullResponse"></div>
   </div>
 
   <script>
@@ -65,10 +84,7 @@
       const apiKey = "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";
 
       const prompt = `
-لطفاً برای مسئله زیر:
-1. مراحل الگوریتم را به زبان فارسی بنویس
-2. فلوچارت دقیق آن را با فرمت Mermaid تولید کن (شروع با graph TD)
-3. کد جاوااسکریپت کامل و قابل اجرا بده
+فقط فلوچارت Mermaid دقیق برای حل مسئله زیر تولید کن. هیچ توضیح یا کدی نده. فقط فلوچارت با شروع graph TD.
 
 مسئله:
 ${problem}
@@ -93,39 +109,10 @@ ${problem}
       document.getElementById("fullResponse").textContent = result;
 
       const flowMatch = result.match(/graph\s+(TD|LR)[\s\S]*?(?=\n```|$)/);
-      const codeMatch = result.match(/```javascript([\s\S]*?)```/);
-      const stepsMatch = result.match(/مراحل الگوریتم[\s\S]*?(?=\n```|$)/);
-
       document.getElementById("flowchart").innerHTML = flowMatch
         ? `<div class="mermaid">${flowMatch[0].trim()}</div>`
         : "⚠️ فلوچارت یافت نشد";
       mermaid.init(undefined, document.querySelectorAll(".mermaid"));
-
-      document.getElementById("codeBlock").textContent = codeMatch
-        ? codeMatch[1].trim()
-        : "⚠️ کد یافت نشد";
-
-      const stepList = document.getElementById("steps");
-      stepList.innerHTML = "";
-      if (stepsMatch) {
-        stepsMatch[0].trim().split("\n").forEach(step => {
-          if (step.trim()) {
-            const li = document.createElement("li");
-            li.textContent = step.replace(/^\d+\./, "🔹");
-            stepList.appendChild(li);
-          }
-        });
-      }
-
-      document.getElementById("output").textContent = "";
-    }
-
-    function runCode() {
-      try {
-        eval(document.getElementById("codeBlock").textContent);
-      } catch (e) {
-        document.getElementById("output").textContent = "❌ خطا در اجرا: " + e.message;
-      }
     }
   </script>
 
