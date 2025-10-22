@@ -88,10 +88,10 @@
       const apiKey = "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";
 
       const prompt = `
-مسئله زیر را تحلیل کن و خروجی بده:
-1. مراحل الگوریتم به زبان فارسی
-2. فلوچارت Mermaid دقیق
-3. کد جاوااسکریپت قابل اجرا
+لطفاً برای مسئله زیر:
+1. مراحل الگوریتم را به زبان فارسی بنویس
+2. فلوچارت دقیق آن را با فرمت Mermaid تولید کن (شروع با graph TD)
+3. کد جاوااسکریپت کامل و قابل اجرا بده
 
 مسئله:
 ${problem}
@@ -113,14 +113,15 @@ ${problem}
       const data = await res.json();
       const result = data.choices?.[0]?.message?.content || "پاسخی دریافت نشد";
 
-      const flowMatch = result.match(/```mermaid([\s\S]*?)```/);
+      // استخراج فلوچارت حتی بدون تگ mermaid
+      const flowMatch = result.match(/graph\s+(TD|LR)[\s\S]*?(?=\n```|$)/);
       const codeMatch = result.match(/```javascript([\s\S]*?)```/);
       const stepsMatch = result.match(/مراحل الگوریتم([\s\S]*?)```/);
 
-      document.getElementById("flowchart").innerHTML = flowMatch ? `<div class="mermaid">${flowMatch[1].trim()}</div>` : "فلوچارت یافت نشد";
+      document.getElementById("flowchart").innerHTML = flowMatch ? `<div class="mermaid">${flowMatch[0].trim()}</div>` : "⚠️ فلوچارت یافت نشد";
       mermaid.init(undefined, document.querySelectorAll(".mermaid"));
 
-      document.getElementById("codeBlock").textContent = codeMatch ? codeMatch[1].trim() : "کد یافت نشد";
+      document.getElementById("codeBlock").textContent = codeMatch ? codeMatch[1].trim() : "⚠️ کد یافت نشد";
 
       const stepList = document.getElementById("steps");
       stepList.innerHTML = "";
