@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>فلوچارت حرفه‌ای هوشمند</title>
+<title>فلوچارت فوق حرفه‌ای هوشمند</title>
 <style>
 :root{
   --bg:#041522; --card:#062032; --text:#e6eef8;
@@ -23,13 +23,12 @@ pre{white-space:pre-wrap;word-break:break-word;color:#cfe9ff;font-size:13px;}
 .dot.round{border-radius:50%;}
 @media(max-width:1100px){.layout{grid-template-columns:1fr;}}
 svg{width:100%;height:100%;display:block;}
-.code-box{background:#02121a;padding:8px;border-radius:6px;font-family:monospace;margin-top:4px;font-size:13px;}
 </style>
 </head>
 <body>
 
 <div class="card">
-<h2>فلوچارت حرفه‌ای هوشمند</h2>
+<h2>فلوچارت فوق حرفه‌ای هوشمند</h2>
 <p>مسئله خود را وارد کنید، الگوریتم بهینه به همراه فلوچارت و کد هر گره نمایش داده می‌شود.</p>
 <textarea id="problem" placeholder="مثال: اعداد بین 10 تا 30 را تولید کن"></textarea>
 <br>
@@ -42,7 +41,7 @@ svg{width:100%;height:100%;display:block;}
 <div class="card flowcard">
 <h3>فلوچارت</h3>
 <div id="svgWrap" style="margin-top:12px;height:600px;">
-<svg id="flowSvg" viewBox="0 0 900 1200" preserveAspectRatio="xMidYMin meet"></svg>
+<svg id="flowSvg" viewBox="0 0 900 1500" preserveAspectRatio="xMidYMin meet"></svg>
 </div>
 <div class="legend">
 <div style="font-weight:600">راهنما شکل‌ها</div>
@@ -60,37 +59,27 @@ svg{width:100%;height:100%;display:block;}
 </div>
 
 <script>
-/* ====== تحلیل هوشمند مسئله ====== */
+/* ===== تحلیل مسئله با هوش ساده ===== */
 function analyzeProblem(text){
   text=text.toLowerCase();
 
-  // تولید بازه
   const matchRange=text.match(/اعداد\s+بین\s+(\d+)\s+تا\s+(\d+)/);
-  if(matchRange){
-    return {type:'range', start:parseInt(matchRange[1]), end:parseInt(matchRange[2])};
-  }
+  if(matchRange) return {type:'range', start:parseInt(matchRange[1]), end:parseInt(matchRange[2])};
 
-  // جمع اعداد
   const matchSum=text.match(/جمع\s+اعداد\s+از\s+(\d+)\s+تا\s+(\d+)/);
   if(matchSum) return {type:'sum', start:parseInt(matchSum[1]), end:parseInt(matchSum[2])};
 
-  // بزرگترین عدد
   if(text.includes("بزرگترین عدد") || text.includes("max")) return {type:'max'};
-
-  // فاکتوریل
   if(text.includes("فاکتوریل")) return {type:'factorial'};
-
   return {type:'generic'};
 }
 
-/* ====== ساخت گراف با کد و توضیح اختصاصی ====== */
+/* ===== ساخت گراف و گره‌ها ===== */
 function buildGraph(problem){
   const analysis=analyzeProblem(problem);
   const nodes=[], edges=[], nid=(i=>()=> 'n'+(i+=1))(0);
-
   function addNode(text,type,explain,code){const id=nid();nodes.push({id,text,type,explain,code});return id;}
 
-  // انواع الگوریتم
   if(analysis.type==='range'){
     const startId=addNode('شروع','start','شروع الگوریتم','');
     const initId=addNode(`تعیین بازه ${analysis.start} تا ${analysis.end}`,'proc','تعریف متغیرهای start,end,current',`start=${analysis.start}; end=${analysis.end}; current=start;`);
@@ -98,7 +87,6 @@ function buildGraph(problem){
     const printId=addNode('نمایش عدد فعلی','proc','چاپ عدد فعلی',`print(current);`);
     const incId=addNode('افزایش عدد فعلی','proc','افزایش عدد برای حلقه','current += 1;');
     const endId=addNode('پایان','end','پایان الگوریتم','');
-
     edges.push({from:startId,to:initId},{from:initId,to:decisionId},{from:decisionId,to:printId,label:'بله'},
                {from:printId,to:incId},{from:incId,to:decisionId},{from:decisionId,to:endId,label:'خیر'});
     return {nodes,edges};
@@ -112,7 +100,6 @@ function buildGraph(problem){
     const incId=addNode('افزایش عدد فعلی','proc','افزایش current','current += 1;');
     const outputId=addNode('نمایش مجموع','proc','نمایش نتیجه sum','print(sum);');
     const endId=addNode('پایان','end','پایان الگوریتم','');
-
     edges.push({from:startId,to:initId},{from:initId,to:decisionId},{from:decisionId,to:addId,label:'بله'},
                {from:addId,to:incId},{from:incId,to:decisionId},{from:decisionId,to:outputId,label:'خیر'},{from:outputId,to:endId});
     return {nodes,edges};
@@ -125,7 +112,6 @@ function buildGraph(problem){
     const decisionId=addNode('اگر عدد فعلی > max؟','decision','بررسی بزرگتر بودن عدد','if num > max:');
     const assignId=addNode('max = عدد فعلی','proc','به روزرسانی max','max=num;');
     const endId=addNode('پایان','end','پایان الگوریتم','');
-
     edges.push({from:startId,to:initId},{from:initId,to:loopId},{from:loopId,to:decisionId},
                {from:decisionId,to:assignId,label:'بله'},{from:assignId,to:loopId},{from:decisionId,to:endId,label:'خیر'});
     return {nodes,edges};
@@ -139,12 +125,12 @@ function buildGraph(problem){
     const decId=addNode('کاهش n','proc','کاهش n','n -= 1;');
     const outputId=addNode('نمایش result','proc','نمایش نتیجه','print(result);');
     const endId=addNode('پایان','end','پایان الگوریتم','');
-
     edges.push({from:startId,to:initId},{from:initId,to:decisionId},{from:decisionId,to:multId,label:'بله'},
                {from:multId,to:decId},{from:decId,to:decisionId},{from:decisionId,to:outputId,label:'خیر'},{from:outputId,to:endId});
     return {nodes,edges};
   }
 
+  // حالت generic
   const startId=addNode('شروع','start','شروع الگوریتم','');
   const procId=addNode('پردازش اصلی','proc','اجرای الگوریتم مسئله','// کد مربوط به مسئله');
   const endId=addNode('پایان','end','پایان الگوریتم','');
@@ -152,26 +138,25 @@ function buildGraph(problem){
   return {nodes,edges};
 }
 
-/* ====== layout عمودی ====== */
+/* ===== layout عمودی ===== */
 function layoutGraph(graph){
-  const positions={};
-  let y=60;
+  const positions={}; let y=60;
   graph.nodes.forEach((n,idx)=>{
     let x=450;
     if(n.type==='decision') x = idx%2===0? 310 : 590;
-    positions[n.id]={x,y};
-    y+=110;
+    positions[n.id]={x,y}; y+=120;
   });
   return positions;
 }
 
-/* ====== render SVG ====== */
+/* ===== render SVG ===== */
 function render(graph, positions, svgEl){
   while(svgEl.firstChild) svgEl.removeChild(svgEl);
   const ns='http://www.w3.org/2000/svg';
   const el=(t,a={})=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+
   const defs=el('defs'); svgEl.appendChild(defs);
-  const marker=el('marker',{id:'arrow', markerWidth:10, markerHeight:10, refX:8, refY:5, orient:'auto', markerUnits:'strokeWidth'});
+  const marker=el('marker',{id:'arrow',markerWidth:10,markerHeight:10,refX:8,refY:5,orient:'auto',markerUnits:'strokeWidth'});
   marker.appendChild(el('path',{d:'M0 0 L10 5 L0 10 z',fill:'var(--arrow)'})); defs.appendChild(marker);
 
   graph.edges.forEach(e=>{
@@ -191,15 +176,12 @@ function render(graph, positions, svgEl){
     else{g.appendChild(el('rect',{x:p.x-140,y:p.y-24,width:280,height:48,rx:8,fill:'var(--proc)'}));}
 
     const lines=n.text.match(/.{1,28}/g)||[n.text];
-    lines.forEach((ln,i)=>{
-      const tx=el('text',{x:p.x,y:p.y-((lines.length-1)*8)+i*16,'text-anchor':'middle'});
-      tx.textContent=ln; g.appendChild(tx);
-    });
+    lines.forEach((ln,i)=>{const tx=el('text',{x:p.x,y:p.y-((lines.length-1)*8)+i*16,'text-anchor':'middle'});tx.textContent=ln; g.appendChild(tx);});
     svgEl.appendChild(g);
   });
 }
 
-/* ====== UI ====== */
+/* ===== UI ===== */
 const genBtn=document.getElementById('generate'), problemEl=document.getElementById('problem'),
 svgEl=document.getElementById('flowSvg'), explainEl=document.getElementById('explain');
 
@@ -208,12 +190,10 @@ genBtn.addEventListener('click',()=>{
   const graph=buildGraph(problem);
   const pos=layoutGraph(graph);
   render(graph,pos,svgEl);
-
-  const expl=graph.nodes.map(n=>`- [${n.id}] "${n.text}"\n  توضیح: ${n.explain}\n  کد: ${n.code}`).join('\n\n');
-  explainEl.textContent=expl;
+  explainEl.textContent=graph.nodes.map(n=>`- [${n.id}] "${n.text}"\n  توضیح: ${n.explain}\n  کد: ${n.code}`).join('\n\n');
 });
 
-/* ====== Export SVG/PNG ====== */
+/* ===== Export SVG/PNG ===== */
 document.getElementById('exportSvg').addEventListener('click',()=>{
   const serializer=new XMLSerializer(); const str=serializer.serializeToString(svgEl);
   const blob=new Blob([str],{type:'image/svg+xml'}); const url=URL.createObjectURL(blob);
@@ -222,7 +202,7 @@ document.getElementById('exportSvg').addEventListener('click',()=>{
 document.getElementById('exportPng').addEventListener('click',()=>{
   const serializer=new XMLSerializer(); const str=serializer.serializeToString(svgEl); const img=new Image();
   const svgBlob=new Blob([str],{type:'image/svg+xml'}); const url=URL.createObjectURL(svgBlob);
-  img.onload=function(){const canvas=document.createElement('canvas');canvas.width=900;canvas.height=1200;
+  img.onload=function(){const canvas=document.createElement('canvas');canvas.width=900;canvas.height=1500;
   const ctx=canvas.getContext('2d'); ctx.fillStyle='#02121a'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height);
   canvas.toBlob(function(blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='flowchart.png';document.body.appendChild(a);a.click();a.remove();},'image/png'); URL.revokeObjectURL(url);};
   img.src=url;
