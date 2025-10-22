@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="="fa">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -69,11 +69,11 @@
 </head>
 <body>
 
-  <h1>🔄 تبدیل مسئله به الگوریتم، فلوچارت و کد</h1>
+  <h1>🔄 تبدیل مسئله به الگوریتم، فلوچارت و کد اجرایی</h1>
 
   <div class="section">
     <label>🧠 مسئله برنامه‌نویسی را وارد کنید:</label>
-    <textarea id="problem" rows="4" placeholder="مثلاً: عددی از کاربر بگیر و بررسی کن فرد است یا زوج"></textarea>
+    <textarea id="problem" rows="4" placeholder="مثلاً: بررسی رمز عبور امن"></textarea>
     <button onclick="generate()">تولید الگوریتم</button>
   </div>
 
@@ -93,38 +93,60 @@
 
   <script>
     function generate() {
-      const problem = document.getElementById("problem").value;
+      const problem = document.getElementById("problem").value.trim();
       let flow = "";
       let code = "";
       let steps = [];
 
-      if (problem.includes("فرد") || problem.includes("زوج")) {
+      if (problem.includes("رمز عبور")) {
         flow = `graph TD
-        A[شروع] --> B[گرفتن عدد از کاربر]
-        B --> C{آیا عدد زوج است؟}
-        C -- بله --> D[نمایش "عدد زوج است"]
-        C -- خیر --> E[نمایش "عدد فرد است"]
-        D --> F[پایان]
-        E --> F[پایان]`;
+        A[شروع] --> B[دریافت رمز عبور از کاربر]
+        B --> C[بررسی طول رمز]
+        C --> D{طول >= 8؟}
+        D -- خیر --> Z[رمز ناامن است]
+        D -- بله --> E[بررسی وجود حرف بزرگ]
+        E --> F{وجود دارد؟}
+        F -- خیر --> Z
+        F -- بله --> G[بررسی وجود حرف کوچک]
+        G --> H{وجود دارد؟}
+        H -- خیر --> Z
+        H -- بله --> I[بررسی وجود عدد]
+        I --> J{وجود دارد؟}
+        J -- خیر --> Z
+        J -- بله --> K[بررسی وجود کاراکتر خاص]
+        K --> L{وجود دارد؟}
+        L -- خیر --> Z
+        L -- بله --> M[رمز امن است]
+        Z --> N[پایان]
+        M --> N`;
 
-        code = `let num = prompt("یک عدد وارد کنید:");
-if (num % 2 === 0) {
-  alert("عدد زوج است");
+        code = `let password = prompt("رمز عبور را وارد کنید:");
+let isSecure = true;
+
+if (password.length < 8) isSecure = false;
+if (!/[A-Z]/.test(password)) isSecure = false;
+if (!/[a-z]/.test(password)) isSecure = false;
+if (!/[0-9]/.test(password)) isSecure = false;
+if (!/[!@#$%^&*()]/.test(password)) isSecure = false;
+
+if (isSecure) {
+  alert("✅ رمز عبور امن است");
 } else {
-  alert("عدد فرد است");
+  alert("❌ رمز عبور ناامن است");
 }`;
 
         steps = [
-          "🔹 شروع الگوریتم",
-          "🔹 از کاربر یک عدد دریافت می‌شود",
-          "🔹 بررسی می‌شود که آیا عدد بر ۲ بخش‌پذیر است یا نه",
-          "🔹 اگر بخش‌پذیر بود، پیام 'عدد زوج است' نمایش داده می‌شود",
-          "🔹 اگر نبود، پیام 'عدد فرد است' نمایش داده می‌شود",
-          "🔹 الگوریتم پایان می‌یابد"
+          "🔹 دریافت رمز عبور از کاربر",
+          "🔹 بررسی طول رمز (حداقل ۸ کاراکتر)",
+          "🔹 بررسی وجود حداقل یک حرف بزرگ",
+          "🔹 بررسی وجود حداقل یک حرف کوچک",
+          "🔹 بررسی وجود حداقل یک عدد",
+          "🔹 بررسی وجود حداقل یک کاراکتر خاص",
+          "🔹 نمایش نتیجه نهایی"
         ];
       } else {
         flow = `graph TD
-        A[شروع] --> B[گرفتن ورودی از کاربر]
+        A[شروع] --> B[دریافت ورودی از کاربر]
         B --> C[پردازش داده]
         C --> D[نمایش خروجی]
         D --> E[پایان]`;
@@ -134,10 +156,9 @@ let result = "خروجی: " + input;
 alert(result);`;
 
         steps = [
-          "🔹 شروع الگوریتم",
           "🔹 دریافت ورودی از کاربر",
-          "🔹 پردازش ساده روی ورودی (مثلاً اضافه کردن متن)",
-          "🔹 نمایش خروجی به کاربر",
+          "🔹 پردازش ساده روی ورودی",
+          "🔹 نمایش خروجی",
           "🔹 پایان الگوریتم"
         ];
       }
