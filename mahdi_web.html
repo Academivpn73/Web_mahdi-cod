@@ -1,120 +1,191 @@
-<!DOCTYPE html>
-<html lang="fa">
+<!doctype html>
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <title>فلوچارت الگوریتم هوشمند</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تولیدکننده فلوچارت الگوریتم</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-  <script>mermaid.initialize({ startOnLoad: false });</script>
   <style>
-    body {
-      font-family: sans-serif;
-      direction: rtl;
-      background: #f0f4f8;
-      padding: 20px;
-    }
-    textarea, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-    }
-    textarea {
-      background: #fff;
-      color: #000;
-      resize: vertical;
-    }
-    button {
-      background: #0077cc;
-      color: #fff;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #005fa3;
-    }
-    .section {
-      margin-top: 30px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .mermaid {
-      direction: ltr;
-    }
-    #flowchart {
-      margin-top: 20px;
-    }
-    #fullResponse {
-      white-space: pre-wrap;
-      background: #eee;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #333;
-    }
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box;font-family:Vazirmatn, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#071024 0%, #071a2a 100%);color:#e6eef8;padding:28px}
+    .wrap{max-width:980px;margin:0 auto}
+    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    textarea{width:100%;min-height:120px;padding:12px;border-radius:8px;border:1px solid #142433;background:var(--glass);color:inherit;resize:vertical}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    button{background:linear-gradient(90deg,var(--accent),#4c1d95);border:none;padding:10px 14px;border-radius:10px;color:white;cursor:pointer}
+    select,input[type=text]{padding:8px;border-radius:8px;border:1px solid #142433;background:transparent;color:inherit}
+    .layout{display:grid;grid-template-columns:1fr 420px;gap:16px;margin-top:18px}
+    .flowcard{min-height:360px;padding:12px;overflow:auto}
+    pre{white-space:pre-wrap;word-break:break-word}
+    footer{margin-top:14px;color:var(--muted);font-size:13px}
+    .badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:13px}
+    @media(max-width:980px){.layout{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="card" style="padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#0ea5a7,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:700">FC</div>
+        <div>
+          <h1>تولید فلوچارت الگوریتم — وارد کنید، فلوچارت و توضیح بگیرید</h1>
+          <div style="color:var(--muted);font-size:13px">بهتر است مسئله‌ش را طبیعی بنویسید: «لیست اعداد را مرتب کن»، «جمع n عدد»، «تشخیص عدد اول» و ...</div>
+        </div>
+      </div>
+    </header>
 
-  <h1>📊 تولید فلوچارت الگوریتم از مسئله</h1>
+    <div class="card">
+      <label for="problem">توضیح مسئله:</label>
+      <textarea id="problem" placeholder="مثال: لیستی از اعداد دارم. می‌خواهم آن‌ها را صعودی مرتب کنم."></textarea>
+      <div class="controls">
+        <select id="lang">
+          <option value="fa">فارسی</option>
+          <option value="en">English</option>
+        </select>
+        <input type="text" id="title" placeholder="عنوان الگوریتم (اختیاری)" />
+        <button id="generate">تولید فلوچارت</button>
+        <button id="exportSvg">دانلود SVG</button>
+      </div>
+    </div>
 
-  <div class="section">
-    <label>🧠 مسئله برنامه‌نویسی را وارد کنید:</label>
-    <textarea id="problem" rows="4" placeholder="مثلاً: بررسی رمز عبور امن"></textarea>
-    <button onclick="generate()">تولید فلوچارت</button>
-  </div>
+    <div class="layout">
+      <div class="card flowcard">
+        <div class="badge">فلوچارت</div>
+        <div id="chartArea" style="margin-top:12px">
+          <!-- mermaid will render here -->
+        </div>
+      </div>
 
-  <div class="section">
-    <h2>📈 فلوچارت الگوریتم</h2>
-    <div id="flowchart"></div>
-  </div>
+      <div class="card flowcard">
+        <div class="badge">توضیح الگوریتم</div>
+        <div id="explain" style="margin-top:12px;color:#dbeafe"></div>
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)" />
+        <div class="badge">کد شبه‌کد</div>
+        <pre id="pseudocode" style="margin-top:12px;color:#c7e2ff"></pre>
+      </div>
+    </div>
 
-  <div class="section">
-    <h2>🧾 پاسخ کامل مدل (برای بررسی)</h2>
-    <div id="fullResponse"></div>
+    <footer>این یک ابزار فرانت‌اند است — تلاش می‌کند از متن ورودی الگوریتم جور کند. برای مسائل خیلی پیچیده باید تکه‌تکه ورودی بدهید یا الگوریتم مورد نظر را مشخص کنید.</footer>
   </div>
 
   <script>
-    async function generate() {
-      const problem = document.getElementById("problem").value.trim();
-      const apiKey = "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";
+    mermaid.initialize({startOnLoad:false, theme: 'default'});
 
-      const prompt = `
-فقط فلوچارت Mermaid دقیق برای حل مسئله زیر تولید کن. هیچ توضیح یا کدی نده. فقط فلوچارت با شروع graph TD.
+    const problemEl = document.getElementById('problem');
+    const genBtn = document.getElementById('generate');
+    const chartArea = document.getElementById('chartArea');
+    const explainEl = document.getElementById('explain');
+    const pseudoEl = document.getElementById('pseudocode');
+    const titleInput = document.getElementById('title');
+    const exportSvgBtn = document.getElementById('exportSvg');
 
-مسئله:
-${problem}
-      `;
+    function analyze(text){
+      const t = text.toLowerCase();
+      // simple keyword-based heuristics
+      const cases = [];
+      if(/sort|مرتب|مرتب کن|مرتب‌سازی|مرتب سازی/.test(t)) cases.push('sort');
+      if(/max|min|بزرگترین|کوچکترین|حداکثر|حداقل/.test(t)) cases.push('extreme');
+      if(/sum|جمع|مجموع|sum of|total/.test(t)) cases.push('sum');
+      if(/factorial|فاکتوریل|فکتوریل|ضرب/.test(t)) cases.push('factorial');
+      if(/prime|اول|عدد اول/.test(t)) cases.push('prime');
+      if(/search|جستجو|پیدا کن|find/.test(t)) cases.push('search');
+      if(/reverse|معکوس|برگردان/.test(t)) cases.push('reverse');
+      if(/palindrom|پالین|قرینه|palindrome/.test(t)) cases.push('palindrome');
+      if(/gcd|ب.م.م|g.c.d|م.م.م/.test(t)) cases.push('gcd');
 
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + apiKey
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.7
-        })
-      });
-
-      const data = await res.json();
-      const result = data.choices?.[0]?.message?.content || "پاسخی دریافت نشد";
-
-      document.getElementById("fullResponse").textContent = result;
-
-      const flowMatch = result.match(/graph\s+(TD|LR)[\s\S]*?(?=\n```|$)/);
-      document.getElementById("flowchart").innerHTML = flowMatch
-        ? `<div class="mermaid">${flowMatch[0].trim()}</div>`
-        : "⚠️ فلوچارت یافت نشد";
-      mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+      const type = cases[0] || 'generic';
+      return {type, cases};
     }
-  </script>
 
+    function buildFor(type, lang){
+      // returns {mermaid, explain, pseudocode}
+      const rtl = (lang==='fa');
+      if(type==='sort'){
+        const mer = `flowchart TD\n  A(دریافت لیست) --> B[i=0] \n  B --> C[جستجوی کوچکترین از i تا end] \n  C --> D[جابجایی] \n  D --> E[i=i+1] \n  E --> F{i < n-1?} \n  F -- بله --> C \n  F -- خیر --> G[پایان]`;
+        const ex = rtl?`الگوریتم: یک روش مرتب‌سازی ساده (انتخابی) ساخته شده است: از ابتدا تا انتها کوچک‌ترین عنصر با عنصر فعلی عوض می‌شود تا لیست مرتب شود.`:`This uses selection sort: repeatedly select the smallest remaining element and swap.`;
+        const ps = `for i from 0 to n-2:\n  min = i\n  for j from i+1 to n-1:\n    if A[j] < A[min]: min = j\n  swap A[i] and A[min]`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      if(type==='sum'){
+        const mer = `flowchart TD\n  A(دریافت n) --> B[sum=0,i=1] \n  B --> C{i <= n?} \n  C -- بله --> D[sum += i; i+=1] \n  D --> C \n  C -- خیر --> E[نمایش sum]`;
+        const ex = rtl?`جمع اعداد از 1 تا n یا جمع یک آرایه — اینجا جمع از 1 تا n نشان داده شده.`:`Compute sum from 1 to n by looping and accumulating.`;
+        const ps = `sum = 0\nfor i in 1..n:\n  sum = sum + i\nprint(sum)`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      if(type==='search'){
+        const mer = `flowchart TD\n  A(دریافت لیست و کلید) --> B[i=0] \n  B --> C{i < n?} \n  C -- بله --> D{A[i]==key?} \n  D -- بله --> E[پیدا شد] \n  D -- خیر --> F[i+=1] --> C \n  C -- خیر --> G[پیدا نشد]`;
+        const ex = rtl?`جستجوی خطی: از اول تا آخر می‌گردیم و اگر برابر پیدا شد، ایندکس را برمی‌گردانیم.`:`Linear search through the array; return index if found.`;
+        const ps = `for i from 0 to n-1:\n  if A[i] == key: return i\nreturn -1`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      if(type==='factorial'){
+        const mer = `flowchart TD\n  A(دریافت n) --> B[res=1,i=2] \n  B --> C{i<=n?} \n  C -- بله --> D[res*=i;i+=1] --> C \n  C -- خیر --> E[نمایش res]`;
+        const ex = rtl?`محاسبه فاکتوریل با ضرب اعداد تا n.`:`Compute factorial by multiplying from 1 to n.`;
+        const ps = `res = 1\nfor i from 2 to n:\n  res = res * i\nprint(res)`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      if(type==='prime'){
+        const mer = `flowchart TD\n  A(دریافت n) --> B[i=2] \n  B --> C{i*i <= n?} \n  C -- بله --> D{n % i == 0?} \n  D -- بله --> E[غیر اول] \n  D -- خیر --> F[i+=1] --> C \n  C -- خیر --> G[اول]`;
+        const ex = rtl?`روش تقسیم تا جذر: عدد را تا جذرش تقسیم می‌کنیم؛ اگر تقسیم‌پذیر نبود عدد اول است.`:`Check divisibility up to sqrt(n).`;
+        const ps = `if n < 2: not prime\nfor i from 2 to floor(sqrt(n)):\n  if n % i == 0: not prime\nprime`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      if(type==='reverse'){
+        const mer = `flowchart TD\n  A(دریافت آرایه) --> B[i=0,j=n-1] \n  B --> C{i<j?} \n  C -- بله --> D[swap A[i] and A[j]; i+=1; j-=1] --> C \n  C -- خیر --> E[پایان]`;
+        const ex = rtl?`معکوس کردن آرایه با دو اشاره‌گر از ابتدا و انتها.`:`Reverse array by swapping from both ends.`;
+        const ps = `i = 0; j = n-1\nwhile i < j:\n  swap A[i], A[j]\n  i += 1; j -= 1`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      if(type==='gcd'){
+        const mer = `flowchart TD\n  A(دریافت a,b) --> B{b==0?} \n  B -- بله --> C[print a] \n  B -- خیر --> D[a,b = b, a % b] --> B`;
+        const ex = rtl?`روش اقلیدسی برای بزرگترین مقسوم‌علیه مشترک (ب.م.م).`:`Euclidean algorithm for GCD.`;
+        const ps = `while b != 0:\n  a, b = b, a % b\nprint(a)`;
+        return {mermaid:mer, explain:ex, pseudo:ps};
+      }
+      // generic fallback
+      const mer = `flowchart TD\n  A(دریافت ورودی) --> B[پیش‌پردازش/تبدیل ورودی] \n  B --> C[محاسبات / تصمیم‌ها] \n  C --> D{شرط / حلقه؟} \n  D -- بله --> E[تکرار تا شرط] \n  D -- خیر --> F[خروجی]`;
+      const ex = rtl?`الگوریتم عمومی: ورودی را می‌گیریم، پردازش می‌کنیم، در صورت نیاز حلقه و شرط اجرا می‌شود و در آخر خروجی نمایش داده می‌شود. برای مسئله‌‌های مخصوص‌تر از کلمات کلیدی استفاده کنید (مثلاً "مرتب", "جمع", "پالین") تا الگوریتم دقیق‌تری بسازد.`:`Generic algorithm template: input → process → loop/conditions → output. Use keywords like "sort", "sum" to get a specific algorithm.`;
+      const ps = `read input\nprocess input\nif condition:\n  loop / repeat\noutput result`;
+      return {mermaid:mer, explain:ex, pseudo:ps};
+    }
+
+    function renderMermaid(code){
+      const id = 'm'+Math.random().toString(36).slice(2,9);
+      mermaid.mermaidAPI.render(id, code, (svgCode) => {
+        chartArea.innerHTML = svgCode;
+      });
+    }
+
+    genBtn.addEventListener('click', ()=>{
+      const text = problemEl.value.trim();
+      if(!text){ alert('لطفاً مسئله را وارد کنید.'); return; }
+      const lang = document.getElementById('lang').value;
+      const analysis = analyze(text);
+      const built = buildFor(analysis.type, lang);
+      // optionally override title
+      const t = titleInput.value.trim();
+      let mer = built.mermaid;
+      if(t) mer = `flowchart TD\n  title[${t}]\n` + mer.replace(/^flowchart TD\n/,'');
+      renderMermaid(mer);
+      explainEl.textContent = built.explain;
+      pseudoEl.textContent = built.pseudo;
+    });
+
+    exportSvgBtn.addEventListener('click', ()=>{
+      const svg = chartArea.querySelector('svg');
+      if(!svg){ alert('ابتدا فلوچارت را تولید کنید.'); return; }
+      const serializer = new XMLSerializer();
+      const source = serializer.serializeToString(svg);
+      const blob = new Blob([source], {type:'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'flowchart.svg';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+
+  </script>
 </body>
 </html>
