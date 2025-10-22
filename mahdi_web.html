@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تبدیل مسئله به الگوریتم و کد</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <script>mermaid.initialize({ startOnLoad: false });</script>
+  <style>
+    body {
+      font-family: "Vazirmatn", sans-serif;
+      background: #f0f0f0;
+      direction: rtl;
+      padding: 20px;
+      color: #222;
+    }
+    h1, h2 {
+      color: #0077cc;
+    }
+    textarea, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+    }
+    textarea {
+      background: #fff;
+      color: #000;
+      resize: vertical;
+    }
+    button {
+      background: #0077cc;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .section {
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    pre {
+      background: #222;
+      color: #0f0;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    #output {
+      background: #ffe082;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+    .mermaid {
+      direction: ltr;
+    }
+    ul {
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔄 تبدیل مسئله به الگوریتم، فلوچارت و کد</h1>
+
+  <div class="section">
+    <label>🧠 مسئله برنامه‌نویسی را وارد کنید:</label>
+    <textarea id="problem" rows="4" placeholder="مثلاً: عددی از کاربر بگیر و بررسی کن فرد است یا زوج"></textarea>
+    <button onclick="generate()">تولید الگوریتم</button>
+  </div>
+
+  <div class="section">
+    <h2>📊 فلوچارت الگوریتم</h2>
+    <div id="flowchart"></div>
+    <h3>📝 توضیح مراحل الگوریتم:</h3>
+    <ul id="steps"></ul>
+  </div>
+
+  <div class="section">
+    <h2>💻 کد جاوااسکریپت</h2>
+    <pre id="codeBlock"></pre>
+    <button onclick="runCode()">▶️ اجرای کد</button>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    function generate() {
+      const problem = document.getElementById("problem").value;
+      let flow = "";
+      let code = "";
+      let steps = [];
+
+      if (problem.includes("فرد") || problem.includes("زوج")) {
+        flow = `graph TD
+        A[شروع] --> B[گرفتن عدد از کاربر]
+        B --> C{آیا عدد زوج است؟}
+        C -- بله --> D[نمایش "عدد زوج است"]
+        C -- خیر --> E[نمایش "عدد فرد است"]
+        D --> F[پایان]
+        E --> F[پایان]`;
+
+        code = `let num = prompt("یک عدد وارد کنید:");
+if (num % 2 === 0) {
+  alert("عدد زوج است");
+} else {
+  alert("عدد فرد است");
+}`;
+
+        steps = [
+          "🔹 شروع الگوریتم",
+          "🔹 از کاربر یک عدد دریافت می‌شود",
+          "🔹 بررسی می‌شود که آیا عدد بر ۲ بخش‌پذیر است یا نه",
+          "🔹 اگر بخش‌پذیر بود، پیام 'عدد زوج است' نمایش داده می‌شود",
+          "🔹 اگر نبود، پیام 'عدد فرد است' نمایش داده می‌شود",
+          "🔹 الگوریتم پایان می‌یابد"
+        ];
+      } else {
+        flow = `graph TD
+        A[شروع] --> B[گرفتن ورودی از کاربر]
+        B --> C[پردازش داده]
+        C --> D[نمایش خروجی]
+        D --> E[پایان]`;
+
+        code = `let input = prompt("ورودی را وارد کنید:");
+let result = "خروجی: " + input;
+alert(result);`;
+
+        steps = [
+          "🔹 شروع الگوریتم",
+          "🔹 دریافت ورودی از کاربر",
+          "🔹 پردازش ساده روی ورودی (مثلاً اضافه کردن متن)",
+          "🔹 نمایش خروجی به کاربر",
+          "🔹 پایان الگوریتم"
+        ];
+      }
+
+      document.getElementById("flowchart").innerHTML = `<div class="mermaid">${flow}</div>`;
+      mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+      document.getElementById("codeBlock").textContent = code;
+
+      const stepList = document.getElementById("steps");
+      stepList.innerHTML = "";
+      steps.forEach(step => {
+        const li = document.createElement("li");
+        li.textContent = step;
+        stepList.appendChild(li);
+      });
+
+      document.getElementById("output").textContent = "";
+    }
+
+    function runCode() {
+      try {
+        eval(document.getElementById("codeBlock").textContent);
+      } catch (e) {
+        document.getElementById("output").textContent = "❌ خطا در اجرا: " + e.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
