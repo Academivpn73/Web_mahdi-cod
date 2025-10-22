@@ -3,189 +3,377 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>تولیدکننده فلوچارت الگوریتم</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <title>تولیدکننده فلوچارت (نسخه پیشرفته)</title>
   <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8;--glass:rgba(255,255,255,0.03)}
+    :root{--bg:#0f1724;--card:#071428;--accent:#06b6d4;--muted:#98a8bd}
     *{box-sizing:border-box;font-family:Vazirmatn, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif}
-    body{margin:0;background:linear-gradient(180deg,#071024 0%, #071a2a 100%);color:#e6eef8;padding:28px}
-    .wrap{max-width:980px;margin:0 auto}
+    body{margin:0;background:linear-gradient(180deg,#041426 0%, #071a2a 100%);color:#e6eef8;padding:28px}
+    .wrap{max-width:1100px;margin:0 auto}
     header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
     h1{margin:0;font-size:20px}
     .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
-    textarea{width:100%;min-height:120px;padding:12px;border-radius:8px;border:1px solid #142433;background:var(--glass);color:inherit;resize:vertical}
+    textarea{width:100%;min-height:120px;padding:12px;border-radius:8px;border:1px solid #0c2536;background:transparent;color:inherit;resize:vertical}
     .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    button{background:linear-gradient(90deg,var(--accent),#4c1d95);border:none;padding:10px 14px;border-radius:10px;color:white;cursor:pointer}
-    select,input[type=text]{padding:8px;border-radius:8px;border:1px solid #142433;background:transparent;color:inherit}
+    button{background:linear-gradient(90deg,var(--accent),#7dd3fc);border:none;padding:10px 14px;border-radius:10px;color:#002;cursor:pointer}
     .layout{display:grid;grid-template-columns:1fr 420px;gap:16px;margin-top:18px}
-    .flowcard{min-height:360px;padding:12px;overflow:auto}
+    .flowcard{min-height:520px;padding:12px;overflow:auto}
     pre{white-space:pre-wrap;word-break:break-word}
     footer{margin-top:14px;color:var(--muted);font-size:13px}
     .badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:13px}
-    @media(max-width:980px){.layout{grid-template-columns:1fr}}
+    svg{width:100%;height:100%;display:block}
+    .node{fill:#062438;stroke:#7dd3fc;stroke-width:1.6}
+    .node-text{fill:#e6f6ff;font-size:13px}
+    .decision{fill:#08304a;stroke:#f97316}
+    .startend{fill:#05202b;stroke:#60a5fa}
+    @media(max-width:1100px){.layout{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="card" style="padding:12px 16px;display:flex;align-items:center;gap:12px">
-        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#0ea5a7,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:700">FC</div>
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#06b6d4,#0284c7);display:flex;align-items:center;justify-content:center;font-weight:700">FC</div>
         <div>
-          <h1>تولید فلوچارت الگوریتم — وارد کنید، فلوچارت و توضیح بگیرید</h1>
-          <div style="color:var(--muted);font-size:13px">بهتر است مسئله‌ش را طبیعی بنویسید: «لیست اعداد را مرتب کن»، «جمع n عدد»، «تشخیص عدد اول» و ...</div>
+          <h1>تولیدکننده فلوچارت — نسخهٔ پیشرفته (رسم SVG)</h1>
+          <div style="color:var(--muted);font-size:13px">مسئله را طبیعی بنویس: مثال‌ها — «مرتب‌سازی لیست»، «جمع n عدد»، «تشخیص عدد اول».</div>
         </div>
       </div>
     </header>
 
     <div class="card">
       <label for="problem">توضیح مسئله:</label>
-      <textarea id="problem" placeholder="مثال: لیستی از اعداد دارم. می‌خواهم آن‌ها را صعودی مرتب کنم."></textarea>
+      <textarea id="problem" placeholder="مثال: لیست اعداد را مرتب کن"></textarea>
       <div class="controls">
-        <select id="lang">
-          <option value="fa">فارسی</option>
-          <option value="en">English</option>
-        </select>
         <input type="text" id="title" placeholder="عنوان الگوریتم (اختیاری)" />
-        <button id="generate">تولید فلوچارت</button>
+        <button id="generate">تولید فلوچارت دقیق</button>
         <button id="exportSvg">دانلود SVG</button>
+        <button id="exportPng">دانلود PNG</button>
       </div>
     </div>
 
     <div class="layout">
       <div class="card flowcard">
-        <div class="badge">فلوچارت</div>
-        <div id="chartArea" style="margin-top:12px">
-          <!-- mermaid will render here -->
+        <div class="badge">فلوچارت (رسم شده با SVG)</div>
+        <div id="svgWrap" style="margin-top:12px;height:520px;">
+          <svg id="flowSvg" viewBox="0 0 900 1200" preserveAspectRatio="xMidYMin meet"></svg>
         </div>
       </div>
 
       <div class="card flowcard">
-        <div class="badge">توضیح الگوریتم</div>
-        <div id="explain" style="margin-top:12px;color:#dbeafe"></div>
+        <div class="badge">اطلاعات کد</div>
+        <div id="info" style="margin-top:12px;color:#dbeafe"></div>
         <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.04)" />
-        <div class="badge">کد شبه‌کد</div>
-        <pre id="pseudocode" style="margin-top:12px;color:#c7e2ff"></pre>
+        <div class="badge">شرح مرحله به مرحله (هر گره)</div>
+        <pre id="explain" style="margin-top:12px;color:#c7e2ff"></pre>
       </div>
     </div>
 
-    <footer>این یک ابزار فرانت‌اند است — تلاش می‌کند از متن ورودی الگوریتم جور کند. برای مسائل خیلی پیچیده باید تکه‌تکه ورودی بدهید یا الگوریتم مورد نظر را مشخص کنید.</footer>
+    <footer>این نسخه بدون وابستگی به کتابخانهٔ بیرونی فلوچارت را به‌صورت SVG می‌کشد و برای هر مسئله گره‌ها و اتصالات و توضیحات را می‌سازد.</footer>
   </div>
 
   <script>
-    mermaid.initialize({startOnLoad:false, theme: 'default'});
-
-    const problemEl = document.getElementById('problem');
-    const genBtn = document.getElementById('generate');
-    const chartArea = document.getElementById('chartArea');
-    const explainEl = document.getElementById('explain');
-    const pseudoEl = document.getElementById('pseudocode');
-    const titleInput = document.getElementById('title');
-    const exportSvgBtn = document.getElementById('exportSvg');
-
+    // ساده‌ساز تشخیص نوع مسئله
     function analyze(text){
       const t = text.toLowerCase();
-      // simple keyword-based heuristics
-      const cases = [];
-      if(/sort|مرتب|مرتب کن|مرتب‌سازی|مرتب سازی/.test(t)) cases.push('sort');
-      if(/max|min|بزرگترین|کوچکترین|حداکثر|حداقل/.test(t)) cases.push('extreme');
-      if(/sum|جمع|مجموع|sum of|total/.test(t)) cases.push('sum');
-      if(/factorial|فاکتوریل|فکتوریل|ضرب/.test(t)) cases.push('factorial');
-      if(/prime|اول|عدد اول/.test(t)) cases.push('prime');
-      if(/search|جستجو|پیدا کن|find/.test(t)) cases.push('search');
-      if(/reverse|معکوس|برگردان/.test(t)) cases.push('reverse');
-      if(/palindrom|پالین|قرینه|palindrome/.test(t)) cases.push('palindrome');
-      if(/gcd|ب.م.م|g.c.d|م.م.م/.test(t)) cases.push('gcd');
-
-      const type = cases[0] || 'generic';
-      return {type, cases};
+      if(/sort|مرتب|مرتب کن|مرتب‌سازی|مرتب سازی/.test(t)) return 'sort';
+      if(/sum|جمع|مجموع|sum of|total/.test(t)) return 'sum';
+      if(/prime|عدد اول|اول/.test(t)) return 'prime';
+      if(/search|جستجو|پیدا کن|find/.test(t)) return 'search';
+      if(/factorial|فاکتوریل|فکتوریل|ضرب/.test(t)) return 'factorial';
+      if(/reverse|معکوس|برگردان/.test(t)) return 'reverse';
+      if(/gcd|ب.م.م|م.م.م/.test(t)) return 'gcd';
+      return 'generic';
     }
 
-    function buildFor(type, lang){
-      // returns {mermaid, explain, pseudocode}
-      const rtl = (lang==='fa');
+    // تولید گره‌ها و یال‌ها برای هر نوع
+    function buildGraph(type, title){
+      const nodes = []; // {id, type, text}
+      const edges = []; // {from,to, label}
+
+      let id=1; const nid=()=> 'n'+(id++);
+
+      function add(t, ntype='process'){ const i=nid(); nodes.push({id:i, type:ntype, text:t}); return i; }
+      function link(a,b,l=''){ edges.push({from:a,to:b,label:l}); }
+
+      const start = add('Start','startend');
+
       if(type==='sort'){
-        const mer = `flowchart TD\n  A(دریافت لیست) --> B[i=0] \n  B --> C[جستجوی کوچکترین از i تا end] \n  C --> D[جابجایی] \n  D --> E[i=i+1] \n  E --> F{i < n-1?} \n  F -- بله --> C \n  F -- خیر --> G[پایان]`;
-        const ex = rtl?`الگوریتم: یک روش مرتب‌سازی ساده (انتخابی) ساخته شده است: از ابتدا تا انتها کوچک‌ترین عنصر با عنصر فعلی عوض می‌شود تا لیست مرتب شود.`:`This uses selection sort: repeatedly select the smallest remaining element and swap.`;
-        const ps = `for i from 0 to n-2:\n  min = i\n  for j from i+1 to n-1:\n    if A[j] < A[min]: min = j\n  swap A[i] and A[min]`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
+        const inNode = add('دریافت لیست');
+        const iNode = add('i = 0');
+        const cond = add('i < n-1 ؟','decision');
+        const findMin = add('جستجوی کوچک‌ترین از i تا end');
+        const swap = add('جابجایی عناصر');
+        const inc = add('i = i + 1');
+        const end = add('پایان','startend');
+
+        link(start,inNode); link(inNode,iNode); link(iNode,cond);
+        link(cond, findMin, 'بله'); link(findMin, swap); link(swap, inc); link(inc, cond);
+        link(cond, end, 'خیر');
+
+        return {nodes, edges, start, end};
       }
+
       if(type==='sum'){
-        const mer = `flowchart TD\n  A(دریافت n) --> B[sum=0,i=1] \n  B --> C{i <= n?} \n  C -- بله --> D[sum += i; i+=1] \n  D --> C \n  C -- خیر --> E[نمایش sum]`;
-        const ex = rtl?`جمع اعداد از 1 تا n یا جمع یک آرایه — اینجا جمع از 1 تا n نشان داده شده.`:`Compute sum from 1 to n by looping and accumulating.`;
-        const ps = `sum = 0\nfor i in 1..n:\n  sum = sum + i\nprint(sum)`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
+        const inNode = add('دریافت n');
+        const init = add('sum = 0; i = 1');
+        const cond = add('i <= n ؟','decision');
+        const body = add('sum += i; i += 1');
+        const end = add('نمایش sum','startend');
+
+        link(start,inNode); link(inNode,init); link(init,cond);
+        link(cond, body, 'بله'); link(body, cond);
+        link(cond, end, 'خیر');
+        return {nodes, edges, start, end};
       }
-      if(type==='search'){
-        const mer = `flowchart TD\n  A(دریافت لیست و کلید) --> B[i=0] \n  B --> C{i < n?} \n  C -- بله --> D{A[i]==key?} \n  D -- بله --> E[پیدا شد] \n  D -- خیر --> F[i+=1] --> C \n  C -- خیر --> G[پیدا نشد]`;
-        const ex = rtl?`جستجوی خطی: از اول تا آخر می‌گردیم و اگر برابر پیدا شد، ایندکس را برمی‌گردانیم.`:`Linear search through the array; return index if found.`;
-        const ps = `for i from 0 to n-1:\n  if A[i] == key: return i\nreturn -1`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
-      }
-      if(type==='factorial'){
-        const mer = `flowchart TD\n  A(دریافت n) --> B[res=1,i=2] \n  B --> C{i<=n?} \n  C -- بله --> D[res*=i;i+=1] --> C \n  C -- خیر --> E[نمایش res]`;
-        const ex = rtl?`محاسبه فاکتوریل با ضرب اعداد تا n.`:`Compute factorial by multiplying from 1 to n.`;
-        const ps = `res = 1\nfor i from 2 to n:\n  res = res * i\nprint(res)`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
-      }
+
       if(type==='prime'){
-        const mer = `flowchart TD\n  A(دریافت n) --> B[i=2] \n  B --> C{i*i <= n?} \n  C -- بله --> D{n % i == 0?} \n  D -- بله --> E[غیر اول] \n  D -- خیر --> F[i+=1] --> C \n  C -- خیر --> G[اول]`;
-        const ex = rtl?`روش تقسیم تا جذر: عدد را تا جذرش تقسیم می‌کنیم؛ اگر تقسیم‌پذیر نبود عدد اول است.`:`Check divisibility up to sqrt(n).`;
-        const ps = `if n < 2: not prime\nfor i from 2 to floor(sqrt(n)):\n  if n % i == 0: not prime\nprime`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
+        const inNode = add('دریافت n');
+        const checkSmall = add('اگر n < 2 -> غیر اول');
+        const iNode = add('i = 2');
+        const cond = add('i*i <= n ؟','decision');
+        const divCheck = add('n % i == 0 ؟','decision');
+        const notPrime = add('غیر اول','startend');
+        const inc = add('i = i + 1');
+        const prime = add('اول','startend');
+
+        link(start,inNode); link(inNode, checkSmall); link(checkSmall, notPrime, 'بله'); link(checkSmall, iNode, 'خیر');
+        link(iNode, cond); link(cond, divCheck, 'بله'); link(divCheck, notPrime, 'بله'); link(divCheck, inc, 'خیر');
+        link(inc, cond); link(cond, prime, 'خیر');
+        return {nodes, edges, start, end: prime};
       }
+
+      if(type==='search'){
+        const inNode = add('دریافت لیست و کلید');
+        const iNode = add('i = 0');
+        const cond = add('i < n ؟','decision');
+        const cmp = add('A[i] == key ؟','decision');
+        const found = add('پیدا شد (index i)','startend');
+        const inc = add('i = i + 1');
+        const notfound = add('پیدا نشد','startend');
+
+        link(start,inNode); link(inNode,iNode); link(iNode,cond);
+        link(cond, cmp, 'بله'); link(cmp, found, 'بله'); link(cmp, inc, 'خیر'); link(inc, cond);
+        link(cond, notfound, 'خیر');
+        return {nodes, edges, start, end: found};
+      }
+
+      if(type==='factorial'){
+        const inNode = add('دریافت n');
+        const init = add('res = 1; i = 2');
+        const cond = add('i <= n ؟','decision');
+        const body = add('res *= i; i += 1');
+        const end = add('نمایش res','startend');
+
+        link(start,inNode); link(inNode, init); link(init, cond);
+        link(cond, body, 'بله'); link(body, cond); link(cond, end, 'خیر');
+        return {nodes, edges, start, end};
+      }
+
       if(type==='reverse'){
-        const mer = `flowchart TD\n  A(دریافت آرایه) --> B[i=0,j=n-1] \n  B --> C{i<j?} \n  C -- بله --> D[swap A[i] and A[j]; i+=1; j-=1] --> C \n  C -- خیر --> E[پایان]`;
-        const ex = rtl?`معکوس کردن آرایه با دو اشاره‌گر از ابتدا و انتها.`:`Reverse array by swapping from both ends.`;
-        const ps = `i = 0; j = n-1\nwhile i < j:\n  swap A[i], A[j]\n  i += 1; j -= 1`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
+        const inNode = add('دریافت آرایه');
+        const init = add('i=0; j=n-1');
+        const cond = add('i < j ؟','decision');
+        const swap = add('swap A[i], A[j]; i++; j--');
+        const end = add('پایان','startend');
+
+        link(start,inNode); link(inNode, init); link(init, cond);
+        link(cond, swap, 'بله'); link(swap, cond); link(cond, end, 'خیر');
+        return {nodes, edges, start, end};
       }
+
       if(type==='gcd'){
-        const mer = `flowchart TD\n  A(دریافت a,b) --> B{b==0?} \n  B -- بله --> C[print a] \n  B -- خیر --> D[a,b = b, a % b] --> B`;
-        const ex = rtl?`روش اقلیدسی برای بزرگترین مقسوم‌علیه مشترک (ب.م.م).`:`Euclidean algorithm for GCD.`;
-        const ps = `while b != 0:\n  a, b = b, a % b\nprint(a)`;
-        return {mermaid:mer, explain:ex, pseudo:ps};
+        const inNode = add('دریافت a, b');
+        const cond = add('b == 0 ؟','decision');
+        const end = add('print(a)','startend');
+        const step = add('a, b = b, a % b');
+
+        link(start,inNode); link(inNode, cond);
+        link(cond, end, 'بله'); link(cond, step, 'خیر'); link(step, cond);
+        return {nodes, edges, start, end};
       }
-      // generic fallback
-      const mer = `flowchart TD\n  A(دریافت ورودی) --> B[پیش‌پردازش/تبدیل ورودی] \n  B --> C[محاسبات / تصمیم‌ها] \n  C --> D{شرط / حلقه؟} \n  D -- بله --> E[تکرار تا شرط] \n  D -- خیر --> F[خروجی]`;
-      const ex = rtl?`الگوریتم عمومی: ورودی را می‌گیریم، پردازش می‌کنیم، در صورت نیاز حلقه و شرط اجرا می‌شود و در آخر خروجی نمایش داده می‌شود. برای مسئله‌‌های مخصوص‌تر از کلمات کلیدی استفاده کنید (مثلاً "مرتب", "جمع", "پالین") تا الگوریتم دقیق‌تری بسازد.`:`Generic algorithm template: input → process → loop/conditions → output. Use keywords like "sort", "sum" to get a specific algorithm.`;
-      const ps = `read input\nprocess input\nif condition:\n  loop / repeat\noutput result`;
-      return {mermaid:mer, explain:ex, pseudo:ps};
+
+      // generic: create simple pipeline
+      const inNode = add('دریافت ورودی');
+      const proc = add('پردازش / محاسبات');
+      const cond = add('شرط؟','decision');
+      const act = add('عملیات درون حلقه');
+      const out = add('خروجی','startend');
+
+      link(start,inNode); link(inNode, proc); link(proc, cond);
+      link(cond, act, 'بله'); link(act, cond); link(cond, out, 'خیر');
+
+      return {nodes, edges, start, end: out};
     }
 
-    function renderMermaid(code){
-      const id = 'm'+Math.random().toString(36).slice(2,9);
-      mermaid.mermaidAPI.render(id, code, (svgCode) => {
-        chartArea.innerHTML = svgCode;
+    // layout: ساده از بالا به پایین، هر ردیف با فاصله مساوی
+    function layoutGraph(graph){
+      const width = 820; const marginX = 40; const yStep = 110;
+      // گروه‌بندی ساده: یک ترتیب پیش‌فرض براساس index
+      const positions = {};
+      let xCenter = width/2;
+      // برای متقارن نگه داشتن تصمیم‌ها، ما آن‌ها را به صورت ستونی قرار می‌دهیم
+      graph.nodes.forEach((n, idx)=>{
+        positions[n.id] = {x: xCenter, y: 60 + idx * yStep};
       });
+      return positions;
     }
+
+    // رسم SVG با اشکال مناسب
+    function render(graph, positions, svgEl){
+      while(svgEl.firstChild) svgEl.removeChild(svgEl.firstChild);
+      const ns = 'http://www.w3.org/2000/svg';
+
+      function create(tag, attrs){ const el = document.createElementNS(ns, tag); for(const k in attrs) el.setAttribute(k, attrs[k]); return el; }
+
+      // draw edges as curved paths
+      graph.edges.forEach(e =>{
+        const p1 = positions[e.from]; const p2 = positions[e.to];
+        const startX = p1.x; const startY = p1.y + 28;
+        const endX = p2.x; const endY = p2.y - 28;
+        const cx1 = startX; const cy1 = (startY + endY)/2;
+        const path = create('path',{d:`M ${startX} ${startY} C ${startX} ${cy1} ${endX} ${cy1} ${endX} ${endY}`, stroke:'#9fd6f7', 'stroke-width':1.6, fill:'none'});
+        svgEl.appendChild(path);
+        if(e.label){
+          const tx = create('text',{x:(startX+endX)/2, y:cy1-6, 'text-anchor':'middle', 'class':'node-text'});
+          tx.textContent = e.label;
+          svgEl.appendChild(tx);
+        }
+      });
+
+      // draw nodes
+      graph.nodes.forEach(n=>{
+        const p = positions[n.id];
+        const group = create('g',{});
+        group.setAttribute('data-id', n.id);
+        // shape
+        if(n.type==='startend'){
+          const r = create('rect',{x:p.x-90, y:p.y-20, width:180, height:40, rx:20, class:'node', fill:'#05202b', stroke:'#60a5fa'});
+          group.appendChild(r);
+        } else if(n.type==='decision'){
+          // diamond
+          const points = `${p.x},${p.y-32} ${p.x+80},${p.y} ${p.x},${p.y+32} ${p.x-80},${p.y}`;
+          const poly = create('polygon',{points, class:'decision', fill:'#08304a', stroke:'#f97316'});
+          group.appendChild(poly);
+        } else {
+          const rect = create('rect',{x:p.x-120, y:p.y-22, width:240, height:44, rx:8, class:'node'});
+          group.appendChild(rect);
+        }
+        // text (wrap simple)
+        const lines = wrapText(n.text, 26);
+        lines.forEach((ln,i)=>{
+          const tx = create('text',{x:p.x, y:p.y - (lines.length-1)*8 + i*16, 'text-anchor':'middle', 'class':'node-text'});
+          tx.textContent = ln;
+          group.appendChild(tx);
+        });
+        svgEl.appendChild(group);
+      });
+
+      // fit viewBox height
+      const allY = Object.values(positions).map(p=>p.y);
+      const maxY = Math.max(...allY)+100;
+      svgEl.setAttribute('viewBox', `0 0 900 ${Math.max(520, maxY)}`);
+    }
+
+    function wrapText(text, maxChars){
+      const words = text.split(' ');
+      const lines = [];
+      let cur = '';
+      words.forEach(w=>{
+        if((cur + ' ' + w).trim().length <= maxChars) cur = (cur + ' ' + w).trim();
+        else { lines.push(cur); cur = w; }
+      });
+      if(cur) lines.push(cur);
+      return lines;
+    }
+
+    // generate info & explanations for each node
+    function genInfo(graph){
+      const info = {inputs:[], variables:[], complexity:'', notes:[]};
+      const explanations = [];
+
+      // simple rules based on node text
+      graph.nodes.forEach(n=>{
+        explanations.push(`${n.text} => توضیح: ${explainNode(n.text)}`);
+        if(/دریافت|دریافت لیست|دریافت n|دریافت a|دریافت آرایه|دریافت لیست و کلید/.test(n.text)) info.inputs.push(n.text);
+        if(/i|j|min|sum|res|a|b/.test(n.text)) info.variables.push(n.text.match(/\b(i|j|min|sum|res|a|b)\b/g));
+      });
+
+      // complexity guesses
+      const t = graph.nodes.map(n=>n.text).join(' ');
+      if(/مرتب|جستجو|sort/.test(t)) info.complexity = 'O(n^2) (نسخهٔ ساده - انتخابی)';
+      else if(/جمع|sum/.test(t)) info.complexity = 'O(n)';
+      else if(/factorial|فاکتوریل/.test(t)) info.complexity = 'O(n)';
+      else if(/gcd/.test(t)) info.complexity = 'O(log(min(a,b)))';
+      else info.complexity = 'وابسته به الگوریتم؛ پیش‌فرض خطی یا الگوریتم ساده ذکر شده';
+
+      return {info, explanations};
+    }
+
+    function explainNode(text){
+      if(/جستجوی کوچک‌ترین/.test(text)) return 'از i تا انتها پیمایش می‌کند و کوچک‌ترین را پیدا می‌کند.';
+      if(/جابجایی|swap/.test(text)) return 'دو عنصر را با هم عوض می‌کند.';
+      if(/i = i|i\+1/.test(text)) return 'اندیس i را افزایش می‌دهد تا به عنصر بعدی حرکت کند.';
+      if(/sum/.test(text)) return 'مقدار جاری را به متغیر مجموع اضافه می‌کند.';
+      if(/نمایش/.test(text)) return 'نتیجهٔ محاسبات را نمایش می‌دهد یا برمی‌گرداند.';
+      if(/i < n|i <= n/.test(text)) return 'شرط ادامهٔ حلقه را بررسی می‌کند.';
+      if(/n % i/.test(text)) return 'بررسی می‌کند که آیا i مقسوم‌علیه n هست یا نه.';
+      return 'این گام یک عمل محاسباتی یا شرطی است که توضیح آن در متن بالا آمده است.';
+    }
+
+    // wire up buttons
+    const genBtn = document.getElementById('generate');
+    const problemEl = document.getElementById('problem');
+    const svgEl = document.getElementById('flowSvg');
+    const infoEl = document.getElementById('info');
+    const explainEl = document.getElementById('explain');
+    const exportSvgBtn = document.getElementById('exportSvg');
+    const exportPngBtn = document.getElementById('exportPng');
 
     genBtn.addEventListener('click', ()=>{
       const text = problemEl.value.trim();
       if(!text){ alert('لطفاً مسئله را وارد کنید.'); return; }
-      const lang = document.getElementById('lang').value;
-      const analysis = analyze(text);
-      const built = buildFor(analysis.type, lang);
-      // optionally override title
-      const t = titleInput.value.trim();
-      let mer = built.mermaid;
-      if(t) mer = `flowchart TD\n  title[${t}]\n` + mer.replace(/^flowchart TD\n/,'');
-      renderMermaid(mer);
-      explainEl.textContent = built.explain;
-      pseudoEl.textContent = built.pseudo;
+      const type = analyze(text);
+      const title = document.getElementById('title').value.trim();
+      const graph = buildGraph(type, title);
+      const positions = layoutGraph(graph);
+      render(graph, positions, svgEl);
+
+      const gi = genInfo(graph);
+      // show info
+      infoEl.innerHTML = `<div><strong>عنوان:</strong> ${title || '(بدون عنوان)'}<br><strong>ورودی‌ها:</strong> ${gi.info.inputs.length? gi.info.inputs.join(', '): 'مشخص نشده'}<br><strong>متغیرهای مهم:</strong> ${gi.info.variables.flat().filter(Boolean).join(', ') || '—'}<br><strong>پیچیدگی (حدس):</strong> ${gi.info.complexity}</div>`;
+      explainEl.textContent = gi.explanations.join('\n\n');
     });
 
     exportSvgBtn.addEventListener('click', ()=>{
-      const svg = chartArea.querySelector('svg');
-      if(!svg){ alert('ابتدا فلوچارت را تولید کنید.'); return; }
+      const svg = svgEl.cloneNode(true);
+      // inline styles
       const serializer = new XMLSerializer();
-      const source = serializer.serializeToString(svg);
-      const blob = new Blob([source], {type:'image/svg+xml;charset=utf-8'});
+      const str = serializer.serializeToString(svg);
+      const blob = new Blob([str], {type:'image/svg+xml;charset=utf-8'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'flowchart.svg';
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = url; a.download = 'flowchart.svg'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
     });
 
+    exportPngBtn.addEventListener('click', ()=>{
+      const serializer = new XMLSerializer();
+      const str = serializer.serializeToString(svgEl);
+      const img = new Image();
+      const svgBlob = new Blob([str], {type:'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(svgBlob);
+      img.onload = function(){
+        const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height;
+        const ctx = canvas.getContext('2d'); ctx.fillStyle = '#021525'; ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        canvas.toBlob(function(blob){ const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'flowchart.png'; document.body.appendChild(a); a.click(); a.remove(); }, 'image/png');
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    });
+
+    // initial example
+    document.addEventListener('DOMContentLoaded', ()=>{
+      problemEl.value = 'لیست اعداد را مرتب کن';
+    });
   </script>
 </body>
 </html>
