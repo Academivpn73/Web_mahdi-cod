@@ -2,65 +2,37 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8" />
-  <title>تبدیل مسئله به الگوریتم و کد</title>
+  <title>سایت هوشمند تولید الگوریتم و کد</title>
   <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
   <script>mermaid.initialize({ startOnLoad: false });</script>
   <style>
-    body {
-      font-family: sans-serif;
-      direction: rtl;
-      background: #f9f9f9;
-      padding: 20px;
+    body { font-family: sans-serif; direction: rtl; background: #f0f4f8; padding: 20px; }
+    textarea, button {
+      width: 100%; padding: 12px; margin-top: 10px; font-size: 16px;
+      border-radius: 8px; border: none;
     }
-    textarea, input, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: none;
-    }
-    textarea {
-      background: #fff;
-      color: #000;
-      resize: vertical;
-    }
-    button {
-      background: #0077cc;
-      color: #fff;
-      cursor: pointer;
-    }
+    textarea { background: #fff; color: #000; resize: vertical; }
+    button { background: #0077cc; color: #fff; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #005fa3; }
     .section {
-      margin-top: 30px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 30px; background: #fff; padding: 20px;
+      border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     pre {
-      background: #222;
-      color: #0f0;
-      padding: 15px;
-      border-radius: 8px;
-      overflow-x: auto;
+      background: #222; color: #0f0; padding: 15px;
+      border-radius: 8px; overflow-x: auto;
     }
     #output {
-      background: #ffe082;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 8px;
+      background: #ffe082; padding: 10px;
+      margin-top: 10px; border-radius: 8px;
     }
-    .mermaid {
-      direction: ltr;
-    }
-    ul {
-      line-height: 1.8;
-    }
+    .mermaid { direction: ltr; }
+    ul { line-height: 1.8; }
   </style>
 </head>
 <body>
 
-  <h1>🔄 تبدیل مسئله به الگوریتم، فلوچارت و کد اجرایی</h1>
+  <h1>🚀 سایت هوشمند تبدیل مسئله به الگوریتم و کد</h1>
 
   <div class="section">
     <label>🧠 مسئله برنامه‌نویسی را وارد کنید:</label>
@@ -71,7 +43,7 @@
   <div class="section">
     <h2>📊 فلوچارت الگوریتم</h2>
     <div id="flowchart"></div>
-    <h3>📝 توضیح مراحل الگوریتم:</h3>
+    <h3>📝 مراحل الگوریتم:</h3>
     <ul id="steps"></ul>
   </div>
 
@@ -80,6 +52,11 @@
     <pre id="codeBlock"></pre>
     <button onclick="runCode()">▶️ اجرای کد</button>
     <div id="output"></div>
+  </div>
+
+  <div class="section">
+    <h2>🧾 پاسخ کامل مدل (برای بررسی)</h2>
+    <pre id="fullResponse"></pre>
   </div>
 
   <script>
@@ -113,23 +90,30 @@ ${problem}
       const data = await res.json();
       const result = data.choices?.[0]?.message?.content || "پاسخی دریافت نشد";
 
-      // استخراج فلوچارت حتی بدون تگ mermaid
+      document.getElementById("fullResponse").textContent = result;
+
       const flowMatch = result.match(/graph\s+(TD|LR)[\s\S]*?(?=\n```|$)/);
       const codeMatch = result.match(/```javascript([\s\S]*?)```/);
-      const stepsMatch = result.match(/مراحل الگوریتم([\s\S]*?)```/);
+      const stepsMatch = result.match(/مراحل الگوریتم[\s\S]*?(?=\n```|$)/);
 
-      document.getElementById("flowchart").innerHTML = flowMatch ? `<div class="mermaid">${flowMatch[0].trim()}</div>` : "⚠️ فلوچارت یافت نشد";
+      document.getElementById("flowchart").innerHTML = flowMatch
+        ? `<div class="mermaid">${flowMatch[0].trim()}</div>`
+        : "⚠️ فلوچارت یافت نشد";
       mermaid.init(undefined, document.querySelectorAll(".mermaid"));
 
-      document.getElementById("codeBlock").textContent = codeMatch ? codeMatch[1].trim() : "⚠️ کد یافت نشد";
+      document.getElementById("codeBlock").textContent = codeMatch
+        ? codeMatch[1].trim()
+        : "⚠️ کد یافت نشد";
 
       const stepList = document.getElementById("steps");
       stepList.innerHTML = "";
       if (stepsMatch) {
-        stepsMatch[1].trim().split("\n").forEach(step => {
-          const li = document.createElement("li");
-          li.textContent = step.replace(/^\d+\./, "🔹");
-          stepList.appendChild(li);
+        stepsMatch[0].trim().split("\n").forEach(step => {
+          if (step.trim()) {
+            const li = document.createElement("li");
+            li.textContent = step.replace(/^\d+\./, "🔹");
+            stepList.appendChild(li);
+          }
         });
       }
 
