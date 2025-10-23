@@ -2,12 +2,16 @@
 <html lang="fa">
 <head>
   <meta charset="UTF-8">
-  <title>تولید فلوچارت الگوریتم - فارسی و انگلیسی</title>
+  <title>تولید فلوچارت الگوریتم</title>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
   <style>
     body {
       font-family: 'Vazir', sans-serif;
       direction: rtl;
-      background-color: #f0f0f0;
+      background-color: #f9f9f9;
       padding: 20px;
     }
     h1 {
@@ -61,12 +65,11 @@
       margin-top: 0;
       color: #444;
     }
-    #explanation-container {
-      margin-top: 30px;
-      background: #fefefe;
-      padding: 15px;
+    .mermaid {
+      direction: ltr;
+      background: #fff;
+      padding: 10px;
       border-radius: 8px;
-      border: 1px solid #ddd;
     }
   </style>
 </head>
@@ -77,7 +80,7 @@
   <div class="input-section">
     <h2>✍️ مسئله خود را وارد کنید:</h2>
     <textarea id="problem-input" placeholder="مثال: در کلینیک دکتر اکبری ۱۰ مطب وجود دارد..."></textarea>
-    <button onclick="generateFlowchart()">تولید فلوچارت و توضیح</button>
+    <button onclick="generateFlowcharts()">تولید فلوچارت</button>
   </div>
 
   <div class="output-section">
@@ -85,30 +88,44 @@
     <div class="flowchart-box">
       <div class="chart">
         <h3>🇮🇷 نسخه فارسی</h3>
-        <div id="flowchart-fa">اینجا فلوچارت فارسی نمایش داده می‌شود...</div>
+        <div class="mermaid" id="flowchart-fa">
+          graph TD
+            A[شروع] --> B[i = ۱]
+            B --> C{آیا i ≤ ۱۰؟}
+            C -- بله --> D[بررسی شرط سن پدر]
+            D --> E{آیا در بازه مطب؟}
+            E -- بله --> F[ثبت تعداد = سن پدر]
+            E -- نه --> G[ثبت تعداد = ۰]
+            F --> H[i = i + ۱]
+            G --> H
+            H --> C
+            C -- نه --> Z[پایان]
+        </div>
       </div>
       <div class="chart">
         <h3>🇬🇧 English Version</h3>
-        <div id="flowchart-en">English flowchart will appear here...</div>
+        <div class="mermaid" id="flowchart-en">
+          graph TD
+            A[Start] --> B[i = 1]
+            B --> C{Is i ≤ 10?}
+            C -- Yes --> D[Check father's age]
+            D --> E{Is age in range?}
+            E -- Yes --> F[Set count = father's age]
+            E -- No --> G[Set count = 0]
+            F --> H[i = i + 1]
+            G --> H
+            H --> C
+            C -- No --> Z[End]
+        </div>
       </div>
-    </div>
-
-    <div id="explanation-container">
-      <h2>📘 توضیح مرحله‌به‌مرحله الگوریتم:</h2>
-      <div id="explanation">در حال تحلیل الگوریتم...</div>
     </div>
   </div>
 
   <script>
-    function generateFlowchart() {
-      const input = document.getElementById("problem-input").value;
-
-      // نمایش اولیه برای تست
-      document.getElementById("flowchart-fa").innerText = "🔄 فلوچارت فارسی برای:\n" + input;
-      document.getElementById("flowchart-en").innerText = "🔄 English flowchart for:\n" + input;
-      document.getElementById("explanation").innerText = "🧠 الگوریتم در حال تحلیل است و توضیح مرحله‌به‌مرحله تولید خواهد شد...";
-
-      // اینجا می‌تونی کد اتصال به مدل یا API رو اضافه کنی
+    function generateFlowcharts() {
+      // در این نسخه، فلوچارت‌ها ثابت هستند
+      // در نسخه‌های بعدی می‌تونیم خروجی رو بر اساس ورودی تولید کنیم
+      mermaid.init(undefined, document.querySelectorAll(".mermaid"));
     }
   </script>
 
