@@ -56,6 +56,7 @@
       background: #fff;
       padding: 10px;
       border-radius: 8px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -75,31 +76,48 @@
 
   <script>
     async function generateFlowchart() {
-      const input = document.getElementById("problem-input").value;
+      const input = document.getElementById("problem-input").value.trim();
       const outputDiv = document.getElementById("flowchart-output");
 
-      outputDiv.innerText = "در حال تولید فلوچارت...";
+      if (!input) {
+        outputDiv.innerText = "❗ لطفاً یک مسئله وارد کنید.";
+        return;
+      }
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "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" // ← اینجا API Key خودت رو بذار
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            { role: "system", content: "تو یک تحلیل‌گر الگوریتم هستی. فقط خروجی Mermaid بده. مسئله فارسی را بخوان و فلوچارت الگوریتم آن را تولید کن." },
-            { role: "user", content: input }
-          ]
-        })
-      });
+      outputDiv.innerText = "⏳ در حال تولید فلوچارت...";
 
-      const data = await response.json();
-      const mermaidCode = data.choices[0].message.content;
+      try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "system",
+                content: "تو یک تحلیل‌گر الگوریتم هستی. فقط خروجی Mermaid بده. مسئله فارسی را بخوان و فلوچارت الگوریتم آن را تولید کن."
+              },
+              {
+                role: "user",
+                content: input
+              }
+            ]
+          })
+        });
 
-      outputDiv.innerText = mermaidCode;
-      mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+        const data = await response.json();
+        const raw = data.choices?.[0]?.message?.content || "";
+        const mermaidCode = raw.includes("graph TD") ? raw.slice(raw.indexOf("graph TD")) : "graph TD\nA[خطا در دریافت فلوچارت]";
+
+        outputDiv.innerText = mermaidCode;
+        mermaid.init(undefined, document.querySelectorAll(".mermaid"));
+      } catch (error) {
+        outputDiv.innerText = "❌ خطا در ارتباط با مدل هوش مصنوعی.";
+        console.error("AI Error:", error);
+      }
     }
   </script>
 
