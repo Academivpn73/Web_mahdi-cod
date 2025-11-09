@@ -84,40 +84,46 @@
       stepsDiv.innerHTML = "<p>در حال تحلیل مسئله...</p>";
       diagramDiv.innerHTML = "";
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer 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"
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "user",
-              content: `لطفاً این مسئله را به مراحل الگوریتمی تبدیل کن و فلوچارت Mermaid برای آن بساز: ${problem}`
-            }
-          ]
-        })
-      });
+      try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+          },
+          body: JSON.stringify({
+            model: "gpt-4",
+            messages: [
+              {
+                role: "user",
+                content: `لطفاً این مسئله را به مراحل الگوریتمی تبدیل کن و فلوچارت Mermaid برای آن بساز: ${problem}`
+              }
+            ]
+          })
+        });
 
-      const data = await response.json();
-      const content = data.choices[0].message.content;
+        const data = await response.json();
+        const content = data.choices[0].message.content;
 
-      const lines = content.split("\n").filter(line => line.trim() !== "");
-      let html = "", mermaidCode = "";
+        const lines = content.split("\n").filter(line => line.trim() !== "");
+        let html = "", mermaidCode = "";
 
-      lines.forEach((line, index) => {
-        if (line.includes("graph TD") || line.includes("graph LR") || line.includes("-->") || line.includes("[")) {
-          mermaidCode += line + "\n";
-        } else {
-          html += `<div class="step"><span class="step-number">${index + 1}.</span> ${line}</div>`;
-        }
-      });
+        lines.forEach((line, index) => {
+          if (line.includes("graph TD") || line.includes("graph LR") || line.includes("-->") || line.includes("[")) {
+            mermaidCode += line + "\n";
+          } else {
+            html += `<div class="step"><span class="step-number">${index + 1}.</span> ${line}</div>`;
+          }
+        });
 
-      stepsDiv.innerHTML = html;
-      diagramDiv.innerHTML = mermaidCode;
-      mermaid.init(undefined, diagramDiv);
+        stepsDiv.innerHTML = html;
+        diagramDiv.innerHTML = mermaidCode;
+        mermaid.init(undefined, diagramDiv);
+      } catch (error) {
+        stepsDiv.innerHTML = "<p>خطا در ارتباط با API. لطفاً اتصال اینترنت یا کلید را بررسی کنید.</p>";
+        diagramDiv.innerHTML = "";
+        console.error("API Error:", error);
+      }
     }
   </script>
 </body>
