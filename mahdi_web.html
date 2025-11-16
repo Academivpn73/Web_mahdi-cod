@@ -1,174 +1,106 @@
-<!DOCTYPE html><html lang="fa" dir="rtl">
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>هوش‌فلو — تولید فلوچارت هوشمند</title>
 <style>
- body { font-family: Vazirmatn, sans-serif; background:#0d0d0d; padding:20px; color:#e6e6e6; }
- .box { background:#1a1a1a; padding:20px; border-radius:15px; max-width:1000px; margin:auto;
-        box-shadow:0 0 10px #000; color:#e6e6e6; }
- textarea { width:100%; padding:12px; border-radius:10px; font-size:16px; background:#111; color:#eee; border:1px solid #444; }
- pre { padding:15px; background:#111; border-radius:10px; white-space:pre-wrap; color:#ddd; border:1px solid #333; }
- button { background:#0055cc; color:white; padding:12px 25px; border:none;
-          border-radius:10px; font-size:18px; cursor:pointer; margin-top:10px; }
- #flowchartImg { margin-top:15px; width:100%; border:1px solid #444; border-radius:10px; }
+ body { font-family: Vazirmatn, sans-serif; background:#0d0d0d; padding:20px; color:#e6e6e6; transition: all 0.3s; }
+ body.light { background:#f2f2f2; color:#111; }
+ .box { background:#1a1a1a; padding:20px; border-radius:15px; max-width:1000px; margin:auto; box-shadow:0 0 10px #000; color:#e6e6e6; transition: all 0.3s; }
+ body.light .box { background:#fff; color:#111; box-shadow:0 0 10px #aaa; }
+ textarea { width:100%; padding:12px; border-radius:10px; font-size:16px; background:#111; color:#eee; border:1px solid #444; transition: all 0.3s; }
+ body.light textarea { background:#fff; color:#111; border:1px solid #ccc; }
+ pre { padding:15px; background:#111; border-radius:10px; white-space:pre-wrap; color:#ddd; border:1px solid #333; transition: all 0.3s; }
+ body.light pre { background:#f7f7f7; color:#111; border:1px solid #aaa; }
+ button { width:100%; background:#0055cc; color:white; border:none; border-radius:10px; padding:14px; font-size:18px; cursor:pointer; margin-top:10px; transition: all 0.3s; }
  .downloadBtn { background:#1e8c3e; margin-top:15px; }
+ .toggleBtn { position:fixed; top:15px; left:15px; background:#444; color:#fff; padding:10px 18px; border-radius:12px; cursor:pointer; z-index:999; transition: all 0.3s; }
+ body.light .toggleBtn { background:#ccc; color:#111; }
+ #flowchartImg { margin-top:15px; width:100%; border:1px solid #444; border-radius:10px; }
+ body.light #flowchartImg { border:1px solid #aaa; }
+ @media print { button {display:none;} body {background:white;} .box {box-shadow:none;} }
 </style>
 </head>
 <body>
+<button class="toggleBtn" onclick="toggleTheme()">تغییر حالت</button>
 <div class="box">
- <h2>هوش‌فلو — تولید خودکار الگوریتم + فلوچارت PDF/PNG + تحلیل هوشمند مسئله</h2>
- <textarea id="problem" rows="6" placeholder="مسئله را وارد کنید..."></textarea>
- <button onclick="generate()">تولید کامل</button> <h3>الگوریتم:</h3>
- <pre id="algorithm"></pre> <h3>فلوچارت (متنی):</h3>
- <pre id="flowText"></pre> <h3>فلوچارت گرافیکی:</h3>
- <img id="flowImg" />
- <button class="downloadBtn" onclick="downloadImg()">دانلود تصویر</button> <h3>پایگاه داده پیشنهادی:</h3>
+ <h2>هوش‌فلو — تولید الگوریتم و فلوچارت خودکار</h2>
+ <textarea id="problem" rows="6" placeholder="مسئله خود را وارد کنید..."></textarea>
+ <button onclick="generate()">تولید کامل</button>
+
+ <h3>الگوریتم:</h3>
+ <pre id="algorithm"></pre>
+
+ <h3>فلوچارت (متنی):</h3>
+ <pre id="flowText"></pre>
+
+ <h3>فلوچارت گرافیکی:</h3>
+ <canvas id="flowCanvas"></canvas>
+ <img id="flowchartImg" />
+ <button class="downloadBtn" onclick="downloadImg()">دانلود تصویر</button>
+
+ <h3>پایگاه داده پیشنهادی:</h3>
  <pre id="database"></pre>
-</div><script>
-// ===================================================
-// NLP — تحلیل هوشمند مسئله (نسخه پیشرفته)
-// ===================================================
+</div>
+
+<script>
+function toggleTheme(){ document.body.classList.toggle('light'); }
+
 function analyze(problem) {
+ if (!problem.trim()) return [ { type:"start", text:"شروع" }, { type:"end", text:"پایان" } ];
  let steps = [];
  steps.push({ type: "start", text: "شروع" });
-
- // تشخیص ورودی‌های مختلف
- const inputMatches = problem.match(/سن|عدد|نمره|قد|ورودی|حقوق|زمان|قدرت|سرعت|مقدار/g);
- if (inputMatches) {
-   inputMatches.forEach(inp => {
-     steps.push({ type: "input", text: `دریافت ${inp}` });
-   });
- }
-
- // تشخیص محاسبات دقیق
- if (/mod|مد/.test(problem)) steps.push({ type: "process", text: "محاسبه MOD" });
- if (/ضرب|دو برابر|×|\*/.test(problem)) steps.push({ type: "process", text: "انجام ضرب یا دو برابر کردن" });
- if (/تقسیم|÷|\//.test(problem)) steps.push({ type: "process", text: "انجام تقسیم" });
- if (/جمع|\+/.test(problem)) steps.push({ type: "process", text: "انجام جمع" });
- if (/تفریق|\-/.test(problem)) steps.push({ type: "process", text: "انجام تفریق" });
-
- // تشخیص چند شرطی
- const conditionRegex = /(اگر.+?)(?:\.|،|
-)/g;
- const allConds = problem.match(conditionRegex);
- if (allConds) {
-   allConds.forEach(c => steps.push({ type: "decision", text: c.replace(/اگر|،/g, "").trim() }));
- }
-
- // تشخیص خروجی‌ها
- if (/نمایش|چاپ|نتیجه|ورود|اجازه/.test(problem)) {
-   steps.push({ type: "output", text: "نمایش نتیجه یا وضعیت نهایی" });
- }
-
- // پایان
+ if (/سن|عدد|ورودی|دریافت|input/.test(problem)) steps.push({ type: "input", text: "دریافت ورودی" });
+ if (/mod|مد|زوج|فرد/.test(problem)) steps.push({ type: "process", text: "محاسبه MOD برای تشخیص زوج/فرد" });
+ if (/محاسبه|حساب|جمع|تفریق|ضرب|تقسیم/.test(problem)) steps.push({ type: "process", text: "انجام عملیات پردازشی" });
+ if (/اگر|شرط|باشد|بررسی/.test(problem)) steps.push({ type: "decision", text: "بررسی شرط‌های مسئله" });
+ if (/چاپ|نمایش|ورود|قبول|رد/.test(problem)) steps.push({ type: "output", text: "نمایش نتیجه" });
  steps.push({ type: "end", text: "پایان" });
  return steps;
 }
 
-// ===================================================
-// رسم فلوچارت حرفه‌ای با شاخه‌های Yes / No
-// ===================================================
-function drawFlowchart(steps) {
- const canvas = document.createElement("canvas");
+function drawFlowchart(steps){
+ const canvas = document.getElementById('flowCanvas');
+ const ctx = canvas.getContext('2d');
  canvas.width = 1100;
- canvas.height = steps.length * 200;
- const ctx = canvas.getContext("2d");
- ctx.font = "20px Vazirmatn";
- ctx.textAlign = "center";
-
- let y = 100;
-
- steps.forEach((s, i) => {
+ canvas.height = steps.length*180;
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.font='20px Vazirmatn'; ctx.textAlign='center';
+ let y=80;
+ steps.forEach((s,i)=>{
    ctx.beginPath();
-
-   if (s.type === "start" || s.type === "end") {
-     ctx.ellipse(550, y, 160, 45, 0, 0, 2 * Math.PI);
+   if(s.type==='start'||s.type==='end') ctx.ellipse(550,y,160,45,0,0,2*Math.PI);
+   else if(s.type==='input'||s.type==='output'||s.type==='process') ctx.rect(350,y-40,400,80);
+   else if(s.type==='decision'){
+     ctx.moveTo(550,y-70); ctx.lineTo(650,y); ctx.lineTo(550,y+70); ctx.lineTo(450,y); ctx.closePath();
+     ctx.fillText('بله',700,y); ctx.fillText('خیر',400,y);
    }
-   else if (s.type === "input" || s.type === "output") {
-     ctx.rect(350, y - 40, 400, 80);
-   }
-   else if (s.type === "process") {
-     ctx.rect(350, y - 40, 400, 80);
-   }
-   else if (s.type === "decision") {
-     ctx.moveTo(550, y - 70);
-     ctx.lineTo(650, y);
-     ctx.lineTo(550, y + 70);
-     ctx.lineTo(450, y);
-     ctx.closePath();
-
-     // متن YES / NO
-     ctx.fillText("بله", 700, y);
-     ctx.fillText("خیر", 400, y);
-   }
-
-   ctx.stroke();
-   ctx.fillText(s.text, 550, y + 5);
-
-   // فلش رو به پایین
-   if (i < steps.length - 1) {
-     ctx.beginPath();
-     ctx.moveTo(550, y + 80);
-     ctx.lineTo(550, y + 140);
-     ctx.stroke();
-     ctx.beginPath();
-     ctx.moveTo(545, y + 140);
-     ctx.lineTo(555, y + 140);
-     ctx.lineTo(550, y + 155);
-     ctx.fill();
-   }
-
-   y += 180;
+   ctx.stroke(); ctx.fillText(s.text,550,y+5);
+   if(i<steps.length-1){ ctx.beginPath(); ctx.moveTo(550,y+80); ctx.lineTo(550,y+140); ctx.stroke();
+     ctx.beginPath(); ctx.moveTo(545,y+140); ctx.lineTo(555,y+140); ctx.lineTo(550,y+155); ctx.fill(); }
+   y+=180;
  });
-
- return canvas.toDataURL();
+ document.getElementById('flowchartImg').src = canvas.toDataURL();
 }
 
-// ===================================================
-// تولید نهایی
-// ===================================================
-function generate() {
- const problem = document.getElementById("problem").value.trim();
- if (!problem) return alert("لطفاً مسئله را وارد کنید");
-
- const steps = analyze(problem);
-
- // ساخت الگوریتم
- let algo = "1. شروع
-";
- steps.slice(1).forEach((s, i) => {
-   algo += `${i + 2}. ${s.text}
-`;
- });
- document.getElementById("algorithm").innerText = algo;
-
- // فلوچارت متنی
- document.getElementById("flowText").innerText = steps
-   .map(s => `[${s.text}]`)
-   .join("
-↓
-");
-
- // تصویر رسم شده
- document.getElementById("flowImg").src = drawFlowchart(steps);
-
- // دیتابیس
- document.getElementById("database").innerText = `TABLE Problems (
- id INT PRIMARY KEY,
- problem_text TEXT,
- algorithm TEXT,
- flowchart_image BLOB,
- steps_json JSON
-);`;
+function generate(){
+ const problem=document.getElementById('problem').value.trim();
+ if(!problem) return alert('لطفاً مسئله را وارد کنید');
+ const steps=analyze(problem);
+ let algo='1. شروع\n'; steps.slice(1).forEach((s,i)=>{ algo+=`${i+2}. ${s.text}\n`; });
+ document.getElementById('algorithm').innerText=algo;
+ document.getElementById('flowText').innerText=steps.map(s=>`[${s.text}]`).join('\n↓\n');
+ drawFlowchart(steps);
+ document.getElementById('database').innerText=`TABLE Problems (\n id INT PRIMARY KEY,\n problem_text TEXT,\n algorithm TEXT,\n flowchart_image BLOB,\n steps_json JSON\n);`;
 }
 
-// دانلود تصویر
-function downloadImg() {
- const a = document.createElement("a");
- a.href = document.getElementById("flowImg").src;
- a.download = "flowchart.png";
+function downloadImg(){
+ const a=document.createElement('a');
+ a.href=document.getElementById('flowchartImg').src;
+ a.download='flowchart.png';
  a.click();
 }
-</script></body>
+</script>
+</body>
 </html>
